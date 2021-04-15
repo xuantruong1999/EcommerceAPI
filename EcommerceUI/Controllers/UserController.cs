@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using EcommerceAPI.DataAccess.EFModel;
+using EcommerceAPI.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceUI.Controllers
 {
@@ -10,23 +13,28 @@ namespace EcommerceUI.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
+        private EcommerceEntity _context { get; set; }
+        public UserController(EcommerceEntity context)
+        {
+            _context = context;
+        }
 
-        //public UserController()
-        //{
-
-        //}
         [HttpGet]
         public ActionResult Get()
         {
-           Dictionary<string, string>  start = new Dictionary<string, string>()
-            {
-               
-            };
+            var profile = new Profile();
+            
+            var user = new User();
+            user.Email = "kadinxuantruong@gmail.com";
+            user.Name = "Truong";
+            user.Profile = profile;
+            
+            _context.Users.Add(user);
+            var track = _context.SaveChanges();
 
-            start.Add("1", "Nguyen Van A");
-            start.Add("2", "Nguyen Van B");
-            start.Add("3", "Nguyen Van C");
-            return Ok(start);
+
+
+            return Ok(user);
         }
     }
 }

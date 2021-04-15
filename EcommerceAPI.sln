@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceAPI.UI", "EcommerceUI\EcommerceAPI.UI.csproj", "{4C7BEF9B-544B-4135-A5F0-18508F31B285}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcommerceAPI.Service", "EcommerceAPI.Service\EcommerceAPI.Service.csproj", "{3B4A6E20-A5D6-4620-930B-1DCE6ABCDE86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceAPI.Service", "EcommerceAPI.Service\EcommerceAPI.Service.csproj", "{3B4A6E20-A5D6-4620-930B-1DCE6ABCDE86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcommerceAPI.Model", "EcommerceAPI.Model\EcommerceAPI.Model.csproj", "{8CE09272-29E0-4701-844A-504B2BB650FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceAPI.Model", "EcommerceAPI.Model\EcommerceAPI.Model.csproj", "{8CE09272-29E0-4701-844A-504B2BB650FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcommerceAPI.DataAccess", "EcommerceAPI.DataAccess\EcommerceAPI.DataAccess.csproj", "{D32E449A-31F1-4B32-843F-DD634268914F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceAPI.DataAccess", "EcommerceAPI.DataAccess\EcommerceAPI.DataAccess.csproj", "{D32E449A-31F1-4B32-843F-DD634268914F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

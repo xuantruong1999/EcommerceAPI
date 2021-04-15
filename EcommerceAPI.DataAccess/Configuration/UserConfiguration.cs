@@ -15,8 +15,8 @@ namespace EcommerceAPI.DataAccess.Configuration
                 .HasKey(a => a.Id);
 
             builder
-                .Property(m => m.Id)
-                .UseIdentityColumn();
+                .Property(m => m.Id);
+               
 
             builder
                 .Property(m => m.Name)
@@ -24,7 +24,7 @@ namespace EcommerceAPI.DataAccess.Configuration
                 .HasMaxLength(50);
 
             builder
-                .ToTable("Artists");
+                .HasOne(p => p.Profile).WithOne(u => u.OwnUser);
         }
     }
        
