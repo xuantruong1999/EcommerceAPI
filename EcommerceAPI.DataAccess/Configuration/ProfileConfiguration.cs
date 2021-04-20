@@ -15,9 +15,6 @@ namespace EcommerceAPI.DataAccess.Configuration
                 .HasKey(k => k.Id);
 
             builder
-                .Property(k => k.Id);
-
-            builder
                 .Property(k => k.Address).HasMaxLength(300);
 
             builder

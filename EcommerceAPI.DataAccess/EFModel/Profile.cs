@@ -12,7 +12,7 @@ namespace EcommerceAPI.DataAccess.EFModel
         }
         public Guid Id { get; set; }
         public string Address { get; set; }
-        public Guid UserID { get; set; }
+        public string Avatar { get; set; }
 
         public User OwnUser { get; set; }
 

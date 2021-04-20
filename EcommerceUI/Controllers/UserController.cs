@@ -13,8 +13,8 @@ namespace EcommerceUI.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private EcommerceEntity _context { get; set; }
-        public UserController(EcommerceEntity context)
+        private EcommerceContext _context { get; set; }
+        public UserController(EcommerceContext context)
         {
             _context = context;
         }
@@ -22,19 +22,20 @@ namespace EcommerceUI.Controllers
         [HttpGet]
         public ActionResult Get()
         {
-            var profile = new Profile();
-            
-            var user = new User();
-            user.Email = "kadinxuantruong@gmail.com";
-            user.Name = "Truong";
-            user.Profile = profile;
-            
-            _context.Users.Add(user);
-            var track = _context.SaveChanges();
+            //var profile = new Profile();
 
+            //var user = new User();
+            //user.Email = "Osin@gmail.com";
+            //user.Name = "Koman";
+            //user.Profile = profile;
+            //_context.Database.EnsureCreated();
+            //_context.Add(user);
+            //_context.SaveChanges();
 
+            var users = from u in _context.Users
+                       select u;
 
-            return Ok(user);
+            return Ok(users);
         }
     }
 }
