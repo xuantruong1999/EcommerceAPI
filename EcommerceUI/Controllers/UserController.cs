@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using EcommerceAPI.DataAccess.EFModel;
 using EcommerceAPI.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using EcommerceAPI.DataAccess.Infrastructure;
 
 namespace EcommerceUI.Controllers
 {
@@ -13,28 +14,16 @@ namespace EcommerceUI.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private EcommerceContext _context { get; set; }
-        public UserController(EcommerceContext context)
+        private IUnitOfWork _unitOfWork;
+        public UserController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
         public ActionResult Get()
         {
-            //var profile = new Profile();
-
-            //var user = new User();
-            //user.Email = "Osin@gmail.com";
-            //user.Name = "Koman";
-            //user.Profile = profile;
-            //_context.Database.EnsureCreated();
-            //_context.Add(user);
-            //_context.SaveChanges();
-
-            var users = from u in _context.Users
-                       select u;
-
+            var users = _unitOfWork.UserResponsitory.GetAll();
             return Ok(users);
         }
     }

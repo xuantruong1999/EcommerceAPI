@@ -13,18 +13,12 @@ namespace EcommerceAPI.DataAccess.Respository
     {
         protected readonly EcommerceContext _dbContext;
         private DbSet<T> _dbSet;
-        private EcommerceContext dbContext;
 
-        public Responsitory(IUnitOfWork unitOfWork)
+        public Responsitory(EcommerceContext _context)
         {
-            _dbContext = unitOfWork.DbContext;
-            _dbSet = _dbContext.Set<T>();
+            _dbContext = _context;
+            _dbSet = _context.Set<T>();
 
-        }
-
-        public Responsitory(EcommerceContext dbContext)
-        {
-            this.dbContext = dbContext;
         }
 
         public int Count

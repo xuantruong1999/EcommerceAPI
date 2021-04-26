@@ -7,17 +7,16 @@ using System.Text;
 
 namespace EcommerceAPI.DataAccess
 {
-    public class UnitOfWork //: IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
-        private EcommerceContext _dbContext { get; }
-        private bool _disposed = false;
-
+        private readonly EcommerceContext _dbContext;
+        private IResponsitory<User> userResponsitory;
+        private IResponsitory<Profile> profileResponsitory;
+        private bool disposedValue = false;
         public UnitOfWork(EcommerceContext DbContext)
         {
             _dbContext = DbContext;
         }
-
-        private IResponsitory<User> userResponsitory;
         #region getter
         public IResponsitory<User> UserResponsitory
         {
@@ -30,6 +29,18 @@ namespace EcommerceAPI.DataAccess
                 return this.userResponsitory;
             }
         }
+
+        public IResponsitory<Profile> ProfileResponsitory
+        {
+            get
+            {
+                if (this.profileResponsitory == null)
+                {
+                    this.profileResponsitory = new Responsitory<Profile>(_dbContext);
+                }
+                return this.profileResponsitory;
+            }
+        }
         #endregion getter
 
         public void SaveChanges()
@@ -40,26 +51,45 @@ namespace EcommerceAPI.DataAccess
 
         private void CheckIsDisposed()
         {
-            if (_disposed)
+            if (disposedValue)
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
         }
 
-        protected virtual void Dispose(bool disposting)
+        protected virtual void Dispose(bool disposing)
         {
-            if (!this._disposed)
+            if (!disposedValue)
             {
-                if (disposting)
+                if (disposing)
                 {
+                    // TODO: dispose managed state (managed objects)
                     if(_dbContext != null)
                     {
                         _dbContext.Dispose();
-                        //_dbContext = null;
-                    }
+                        
+
+                    } 
                 }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
             }
-            _disposed = true;
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~UnitOfWork()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,4 +1,5 @@
 using EcommerceAPI.DataAccess;
+using EcommerceAPI.DataAccess.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,7 +33,7 @@ namespace EcommerceUI
                  //options.UseInMemoryDatabase("EcommerceDB");
                  options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
            });
-
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 

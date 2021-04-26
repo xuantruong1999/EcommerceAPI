@@ -10,11 +10,6 @@ namespace EcommerceAPI.DataAccess
 {
     public class EcommerceContext : DbContext
     {
-        public EcommerceContext()
-        {
-
-        }
-
         public EcommerceContext(DbContextOptions<EcommerceContext> options) : base(options)
         {
             
@@ -23,7 +18,7 @@ namespace EcommerceAPI.DataAccess
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Profile> Profiles { get; set; }
 
-        protected void OnModelCreating(ModelBuilder builder)
+        protected void OnConfiguring(ModelBuilder builder)
         {
             builder
                .ApplyConfiguration(new ProfileConfiguration());
