@@ -7,6 +7,7 @@ using EcommerceAPI.DataAccess.EFModel;
 using EcommerceAPI.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using EcommerceAPI.DataAccess.Infrastructure;
+using EcommerceExtention;
 
 namespace EcommerceUI.Controllers
 {
@@ -23,8 +24,11 @@ namespace EcommerceUI.Controllers
         [HttpGet]
         public ActionResult Get()
         {
-            var users = _unitOfWork.UserResponsitory.GetAll();
-            return Ok(users);
+            List<User> users = CommonExtention<User>.ConvertIEnumToList(_unitOfWork.UserResponsitory.GetAll());
+            List<Profile> profiles = CommonExtention<Profile>.ConvertIEnumToList(_unitOfWork.ProfileResponsitory.GetAll());
+           var results = (from u in users join p in profiles
+                          on u.Id equals p.UserID select u.Profile).FirstOrDefault();
+            return Ok(results);
         }
     }
 }
