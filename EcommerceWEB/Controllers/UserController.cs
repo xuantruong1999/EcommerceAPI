@@ -3,19 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EcommerceAPI.DataAccess.Infrastructure;
+using EcommerceWEB.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceWEB.Controllers
 {
     public class UserController : BaseController
-    {   protected readonly IUnitOfWork _unitofwork;
+    {   
+        protected readonly IUnitOfWork _unitofwork;
         public UserController(IUnitOfWork _unitofwork) : base(_unitofwork)
         {
         }
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Login()
         {
-            _unitOfWork.UserResponsitory.GetAll();
+
             return View();
+        }
+        [HttpPost]
+        public IActionResult Login(UserLoginViewModel user)
+        {
+
+            if (user == null)
+            {
+                ErrorViewModel error = new ErrorViewModel("Information login User is not null");
+                return Redirect("/error");
+            }
+            return Redirect("/home");
         }
     }
 }
