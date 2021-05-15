@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace EcommerceAPI.DataAccess.EFModel
+namespace EcommerceWEB.Models
 {
-    [Table("User")]
-    public class User
+    public class UserRegisterViewModel
     {
-        public User()
-        {
-            CreateDate = DateTime.Now;
-        }
-
         public Guid Id { get; set; }
         [Required]
+        public string Name { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         [Required]
@@ -34,6 +29,15 @@ namespace EcommerceAPI.DataAccess.EFModel
         //SuperAdmin, Admin, Publisher, Normal User
         [Required]
         public string Permistion { get; set; }
-        public Profile Profile { get; set; }
     }
+
+    public class UserLoginViewModel
+    {
+        [Required]
+        public string UserNameOrEmail { get; set; }
+        [Required]
+        public string Password { get; set; }
+    }
+
+
 }

@@ -20,6 +20,7 @@
     "EcommerceUI": {
       "commandName": "Project",
       "launchBrowser": true,
+      "browsers": [ "chrome" ],
       "launchUrl": "api/user",
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {

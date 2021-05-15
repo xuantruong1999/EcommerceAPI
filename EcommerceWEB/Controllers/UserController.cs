@@ -17,7 +17,8 @@ namespace EcommerceWEB.Controllers
         {
             _mapper = mapper;
         }
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Login()
         {
             var a = _unitOfWork.UserResponsitory.GetAll();
             return View();

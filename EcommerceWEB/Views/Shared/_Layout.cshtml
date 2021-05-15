@@ -6,6 +6,7 @@
     <title>@ViewData["Title"] - EcommerceWEB</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("Styles", false)
     @RenderSection("registerStyle", required:false);
 </head>
 <body>
@@ -22,8 +23,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item mr-auto">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item mr-1">
+                            <a class="nav-link text-dark btn btn-primary" asp-area="" asp-controller="User" asp-action="login">Sign In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark btn btn-success" asp-area="" asp-controller="User" asp-action="register">Register</a>
                         </li>
                     </ul>
                 </div>
