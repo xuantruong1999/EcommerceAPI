@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using AutoMapper;
 
 namespace EcommerceWEB
 {
@@ -31,7 +32,11 @@ namespace EcommerceWEB
                 //options.UseInMemoryDatabase("EcommerceDB");
                 options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
             });
+
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            
 
             services.AddControllersWithViews();
             

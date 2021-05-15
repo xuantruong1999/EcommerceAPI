@@ -1,0 +1,9 @@
+﻿form#register {
+    width: 85vh;
+    height: auto;
+    border: none;
+    border-radius: 25px;
+    padding: 10px;
+    box-shadow: 0px 10px 20px 0px rgba(50, 50, 50, 0.52);
+
+}

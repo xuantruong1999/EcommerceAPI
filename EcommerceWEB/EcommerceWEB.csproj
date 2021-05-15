@@ -6,11 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.14" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EcommerceAPI.DataAccess\EcommerceAPI.DataAccess.csproj" />
+    <ProjectReference Include="..\EcommerceAPI.Model\EcommerceAPI.Model.csproj" />
   </ItemGroup>
 
 </Project>
