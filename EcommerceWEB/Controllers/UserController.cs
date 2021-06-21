@@ -1,35 +1,38 @@
-﻿using System;
+﻿using AutoMapper;
+using EcommerceAPI.Model;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EcommerceAPI.DataAccess.Infrastructure;
-using EcommerceWEB.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceWEB.Controllers
 {
     public class UserController : BaseController
-    {   
-        protected readonly IUnitOfWork _unitofwork;
-        public UserController(IUnitOfWork _unitofwork) : base(_unitofwork)
-        {
-        }
-        [HttpGet]
-        public IActionResult Login()
-        {
+    {
+        protected readonly UserManager<IdentityUser> _userManager;
 
-            return View();
-        }
-        [HttpPost]
-        public IActionResult Login(UserLoginViewModel user)
+        protected readonly SignInManager<IdentityUser> _signInmanager;
+        public UserController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInmanager, IMapper mapper) : base(mapper)
         {
+            _userManager = userManager;
+            _signInmanager = signInmanager;
+        }
+        [Authorize]
+        public IActionResult Index()
+        {
+            var listUser = _userManager.Users;
+            List<UserViewModel> listViewuser = new List<UserViewModel>();
 
-            if (user == null)
+            foreach(var item in listUser)
             {
-                ErrorViewModel error = new ErrorViewModel("Information login User is not null");
-                return Redirect("/error");
+                UserViewModel user = _mapper.Map<UserViewModel>(item);
+                listViewuser.Add(user);
             }
-            return Redirect("/home");
+
+            return View(listViewuser);
         }
     }
 }

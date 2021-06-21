@@ -9,7 +9,7 @@ namespace EcommerceAPI.DataAccess.Infrastructure
 {
     public interface IResponsitory<T> where T : class
     {
-        IEnumerable GetAll();
+        List<T> GetAll();
         T GetByID(object Id);
         int Count { get; }
         void Insert(T entity);

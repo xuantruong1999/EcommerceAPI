@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceAPI.DataAccess", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceWEB", "EcommerceWEB\EcommerceWEB.csproj", "{A9D0CF00-C305-4EE0-BE12-1E3973232FBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcommerceExtention", "EcommerceExtention\EcommerceExtention.csproj", "{C0549358-1F3C-4FCE-A112-023A5E7D76F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceExtention", "EcommerceExtention\EcommerceExtention.csproj", "{C0549358-1F3C-4FCE-A112-023A5E7D76F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,11 +4,11 @@ using System.Text;
 using EcommerceAPI.DataAccess.Configuration;
 using EcommerceAPI.DataAccess.EFModel;
 using Microsoft.EntityFrameworkCore;
-//using System.Data.Entity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace EcommerceAPI.DataAccess
 {
-    public class EcommerceContext : DbContext
+    public class EcommerceContext : IdentityDbContext
     {
         public EcommerceContext(DbContextOptions<EcommerceContext> options) : base(options)
         {
@@ -18,8 +18,10 @@ namespace EcommerceAPI.DataAccess
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Profile> Profiles { get; set; }
 
-        protected void OnConfiguring(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
+
             builder
                .ApplyConfiguration(new ProfileConfiguration());
 

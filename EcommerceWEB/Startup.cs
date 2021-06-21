@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using EcommerceAPI.DataAccess;
 using EcommerceAPI.DataAccess.Infrastructure;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,15 +28,26 @@ namespace EcommerceWEB
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<EcommerceContext>(options =>
-            {
-                //options.UseInMemoryDatabase("EcommerceDB");
-                options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
-            });
+            //services.AppDbContextPool<EcommerceContext>(options =>
+            //{
+            //    //options.UseInMemoryDatabase("EcommerceDB");
+            //    options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
+            //});
+            services.AddDbContextPool<EcommerceContext>(options =>
+                   options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"))
+            );
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<EcommerceContext>();
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddControllersWithViews();
-            
+            // add cookie 
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie();
+
+            services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,18 +64,17 @@ namespace EcommerceWEB
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                   name: "Admin",
-                   pattern: "{area:exists}/{action=Index}/{id?}");
-
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

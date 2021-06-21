@@ -8,6 +8,7 @@ using EcommerceAPI.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using EcommerceAPI.DataAccess.Infrastructure;
 using EcommerceExtention;
+using System.Net;
 
 namespace EcommerceUI.Controllers
 {

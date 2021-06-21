@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EcommerceAPI.DataAccess.Infrastructure;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceWEB.Controllers
 {
     public class BaseController : Controller
     {
-        public readonly IUnitOfWork _unitOfWork;
+        protected readonly IMapper _mapper;
 
         public BaseController()
         {
-
         }
-        public BaseController(IUnitOfWork unitOfWork)
+        public BaseController(IMapper mapper)
         {
-            this._unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
     }
 }
