@@ -13,18 +13,10 @@ namespace EcommerceAPI.DataAccess.Configuration
         {
             builder
                 .HasKey(a => a.Id);
-
+            
             builder
-                .Property(m => m.Id)
-                .UseIdentityColumn();
-
-            builder
-                .Property(m => m.Name)
-                .IsRequired()
-                .HasMaxLength(50);
-
-            builder
-                .ToTable("Artists");
+               .HasOne(p => p.Profile)
+               .WithOne(u => u.OwnUser);
         }
     }
        

@@ -1,7 +1,10 @@
+using EcommerceAPI.DataAccess;
+using EcommerceAPI.DataAccess.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,6 +18,7 @@ namespace EcommerceUI
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "__myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -25,7 +29,22 @@ namespace EcommerceUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://localhost:3001").AllowAnyHeader().AllowAnyMethod();
+                                  });
+            });
+
+            services.AddDbContext<EcommerceContext>(options =>
+            {
+                 //options.UseInMemoryDatabase("EcommerceDB");
+                 options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
+           });
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,6 +58,8 @@ namespace EcommerceUI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 
