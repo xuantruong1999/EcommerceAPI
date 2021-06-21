@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using AutoMapper;
 
 namespace EcommerceWEB
 {
@@ -40,6 +41,7 @@ namespace EcommerceWEB
                 .AddEntityFrameworkStores<EcommerceContext>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            
 
             services.AddControllersWithViews();
             // add cookie 
