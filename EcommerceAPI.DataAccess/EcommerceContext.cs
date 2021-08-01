@@ -1,38 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using EcommerceAPI.DataAccess.Configuration;
-using EcommerceAPI.DataAccess.EFModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using EcommerceAPI.DataAccess.EFModel;
 
 namespace EcommerceAPI.DataAccess
 {
-    public class EcommerceContext : IdentityDbContext
+    public class EcommerceContext : IdentityDbContext<User>
     {
-        public EcommerceContext(DbContextOptions<EcommerceContext> options) : base(options)
+        public EcommerceContext()
         {
             
         }
 
-        public virtual DbSet<User> Users { get; set; }
-        public virtual DbSet<Profile> Profiles { get; set; }
+        public EcommerceContext(DbContextOptions<EcommerceContext> options) : base(options)
+        {
 
+        }
+        
+        public DbSet<User> Users { get; set; }
+        public DbSet<Profile> Profile { get; set; }
+        public DbSet<CategoryProduct> CategoryProducts { get; set; }
+        public DbSet<Product> Products { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder
-               .ApplyConfiguration(new ProfileConfiguration());
-
-            builder
-                .ApplyConfiguration(new UserConfiguration());
-
             builder.Entity<User>()
-                .HasKey(u => u.Id);
-            
+                .HasOne<Profile>(user => user.Profile)
+                .WithOne(p => p.User)
+                .HasForeignKey<Profile>(p => p.UserID)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+
             builder.Entity<Profile>()
-                .HasKey(p => p.Id);
+                .Property(p => p.Version).IsConcurrencyToken();
+
+            builder.Entity<Product>()
+                    .HasOne<CategoryProduct>(product => product.CategoryProduct)
+                    .WithMany(cate => cate.Products)
+                    .HasForeignKey(product => product.CategoryID)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Cascade);
+               
+
+
+
+
+
         }
     }
 }

@@ -9,20 +9,34 @@ namespace EcommerceAPI.DataAccess
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly EcommerceContext _dbContext;
+        private EcommerceContext _dbContext;
         private IResponsitory<User> userResponsitory;
         private IResponsitory<Profile> profileResponsitory;
+        private IResponsitory<CategoryProduct> categoryProduct;
+        private IResponsitory<Product> product;
         private bool disposedValue = false;
         public UnitOfWork(EcommerceContext DbContext)
         {
             _dbContext = DbContext;
+        }
+        
+        public EcommerceContext DbContext 
+        {
+            get
+            {
+                if(_dbContext == null)
+                {
+                    _dbContext = new EcommerceContext();
+                }
+                return _dbContext;
+            }
         }
         #region getter
         public IResponsitory<User> UserResponsitory
         {
             get
             {
-                if(this.userResponsitory == null)
+                if (this.userResponsitory == null)
                 {
                     this.userResponsitory = new Responsitory<User>(_dbContext);
                 }
@@ -41,12 +55,40 @@ namespace EcommerceAPI.DataAccess
                 return this.profileResponsitory;
             }
         }
+
+        public IResponsitory<CategoryProduct> CategoryProductResponsitory
+        {
+            get
+            {
+                if (this.categoryProduct == null)
+                {
+                    this.categoryProduct = new Responsitory<CategoryProduct>(_dbContext);
+                }
+                return this.categoryProduct;
+            }
+        }
+
+        public IResponsitory<Product> ProductResponsitory
+        {
+            get
+            {
+                if (this.product == null)
+                {
+                    this.product = new Responsitory<Product>(_dbContext);
+                }
+                return this.product;
+            }
+        }
         #endregion getter
 
-        public void SaveChanges()
+        public void Save()
         {
             CheckIsDisposed();
             _dbContext.SaveChanges();
+        }
+        public void SaveAsync()
+        {
+            _dbContext.SaveChangesAsync();
         }
 
         private void CheckIsDisposed()
@@ -77,13 +119,6 @@ namespace EcommerceAPI.DataAccess
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~UnitOfWork()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {

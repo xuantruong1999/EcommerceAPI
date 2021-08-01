@@ -37,7 +37,7 @@ namespace EcommerceAPI.DataAccess.Respository
             Delete(entity);
         }
 
-        public IQueryable Find(Expression<Func<T, bool>> predicate)
+        public IQueryable<T> Find(Expression<Func<T, bool>> predicate)
         {
            return _dbSet.Where(predicate);
         }
@@ -73,16 +73,10 @@ namespace EcommerceAPI.DataAccess.Respository
         }
 
         public void Update(T entity)
-        {
+        {   
             _dbSet.Attach(entity);
             _dbContext.Entry(entity).State = EntityState.Modified;
         }
-
-        //save
-
-        public void Save()
-        {
-            _dbContext.SaveChanges();
-        }
+               
     }
 }

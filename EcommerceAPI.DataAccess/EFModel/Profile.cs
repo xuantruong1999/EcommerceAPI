@@ -1,23 +1,25 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace EcommerceAPI.DataAccess.EFModel
 {
-    public class Profile 
+    public class Profile
     {
-        public Profile()
-        {
-            Id = new Guid();
-        }
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Avatar { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Address { get; set; }
-        public string Avatar { get; set; }
-        public Guid UserID { get; set; }
-        public User OwnUser { get; set; }
+        [Timestamp]
+        public byte[] Version { get; set; }
+        [ForeignKey("User")]
+        public string UserID { get; set; }
+        [Required]
+        public User User { get; set; }
 
     }
 }

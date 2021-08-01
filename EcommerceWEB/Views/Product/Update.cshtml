@@ -1,0 +1,70 @@
+﻿@model EcommerceAPI.Model.Product.ProductUpdateViewModel
+
+@{
+    ViewData["Title"] = "Update";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{ 
+    string fullPath = "../../Images/ProductImages/" + Model.Image;
+}
+<h1>Update</h1>
+
+<hr />
+
+    <form asp-action="Update" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col-4">
+                <div class="form-group text-center">
+                    <img src="@fullPath" alt="product images" class="img-fluid" />
+                </div>
+                <div>
+                    <input type="file" name="File" value="" />
+                </div>
+            </div>
+            <div class="col-8">
+                @Html.HiddenFor(Model => Model.Id)
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UnitStock" class="control-label"></label>
+                    <input asp-for="UnitStock" class="form-control" />
+                    <span asp-validation-for="UnitStock" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Rating" class="control-label"></label>
+                    <input asp-for="Rating" class="form-control" />
+                    <span asp-validation-for="Rating" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Price" class="control-label"></label>
+                    <input asp-for="Price" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    @Html.DropDownList("CategoryID", Model.Categories, new { @class = "form-select"})
+                </div>
+            </div>
+        </div>
+            <div class="form-group">
+                <label asp-for="Description">Description</label>
+                <textarea asp-for="Description" class="form-control" ></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            
+        
+        <div class="form-group">
+        <input type="submit" value="Save" asp-action="OnPostUpdate" asp-controller="Product" class="btn btn-primary" />
+        </div>
+    </form>
+
+<div>
+    <a asp-action="Index" class="btn btn-primary">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

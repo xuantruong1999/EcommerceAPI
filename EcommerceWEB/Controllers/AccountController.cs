@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EcommerceAPI.DataAccess.EFModel;
 using EcommerceAPI.DataAccess.Infrastructure;
 using EcommerceExtention;
 using EcommerceAPI.Model;
@@ -11,26 +10,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
+using EcommerceAPI.DataAccess;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using EcommerceAPI.DataAccess.EFModel;
+using AutoMapper;
 
 namespace EcommerceWEB.Controllers
 {
     
     public class AccountController : BaseController
     {
-        protected readonly UserManager<IdentityUser> _userManager;
-
-        protected readonly SignInManager<IdentityUser> _signInmanager;
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInmanager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork)
+           : base(userManager, signInmanager, roleManager, mapper, unitOfWork)
         {
-            _userManager = userManager;
-            _signInmanager = signInmanager;
         }
 
         [HttpGet]
-        public ActionResult Login(string returnValue = null)
+        public IActionResult Login(string returnUrl = "")
         {
-            ViewData["ReturnURL"] = returnValue;
-            return View();
+            var model = new UserLoginViewModel { ReturnURL = returnUrl };
+            return View(model);
         }
 
         [HttpPost]
@@ -40,13 +39,15 @@ namespace EcommerceWEB.Controllers
             {
                 string emailPattern = string.Format($"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
                 bool validateEmail = Regex.IsMatch(model.UserNameOrEmail, emailPattern);
-                string returnURL = model.ReturnURL ?? "Home/Index";
+                string returnURL = model.ReturnURL ?? Url.Content("~/user/index");
                 if (!validateEmail)
                 {
                     var result = await _signInmanager.PasswordSignInAsync(model.UserNameOrEmail, model.Password, model.RememberMe, false);
                     if (result.Succeeded)
                     {
-                        return LocalRedirect(returnURL);
+                        if(Url.IsLocalUrl(returnURL))
+                            return Redirect(returnURL);
+                        return Redirect(Url.Content("~/"));
                     }
                     else
                     {
@@ -79,7 +80,7 @@ namespace EcommerceWEB.Controllers
             }   
             return View(model);
         }
-
+        
         [HttpGet]
         public IActionResult Register()
         {
@@ -91,11 +92,28 @@ namespace EcommerceWEB.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser() { UserName = model.Username, Email = model.Email };
+                var user = new User() { UserName = model.Username, Email = model.Email };
                 var result = await _userManager.CreateAsync(user, model.Password);
-
+                
                 if (result.Succeeded)
                 {
+                    var roleCheck = await _roleManager.RoleExistsAsync("Member");
+                    if (!roleCheck)
+                    {
+                        IdentityRole role = new IdentityRole()
+                        {
+                            Name = "Member"
+                        };
+
+                        var statusCreaterole = await _roleManager.CreateAsync(role);
+
+                        if (statusCreaterole.Succeeded)
+                        {
+                            await _userManager.AddToRoleAsync(user, "Member");
+                        }
+
+                    }
+                    await _userManager.AddToRoleAsync(user, "Member");
                     await _signInmanager.SignInAsync(user, false);
                     return RedirectToAction("Index", "Home");
                 }
@@ -108,7 +126,6 @@ namespace EcommerceWEB.Controllers
             return View(model);
         }
 
-        [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await _signInmanager.SignOutAsync();
@@ -116,6 +133,5 @@ namespace EcommerceWEB.Controllers
         }
 
         
-
     }
 }

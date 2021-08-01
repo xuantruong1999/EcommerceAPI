@@ -1,0 +1,64 @@
+﻿@model EcommerceAPI.Model.Product.ProductNewViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<hr />
+    <form asp-action="OnPostNewProduct" asp-controller="Product" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col col-4">
+                <input class="form-control-file" type="file" name="Image"/>
+            </div>  
+            <div class="col col-8">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Rating" class="control-label"></label>
+                    <input asp-for="Rating" class="form-control" />
+                    <span asp-validation-for="Rating" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Price" class="control-label"></label><br>
+                    <div class="form-inline">
+                        <input asp-for="Price" class="form-control" /><span class="ml-1">VND</span>
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <select id="category" class="form-select" aria-label="Default select example" name="category" asp-items="@Model.Categories">
+                        <option>Select Category</option>
+                    </select>
+                    <span asp-validation-for="Categories" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UnitStock" class="control-label"></label>
+                    <input asp-for="UnitStock" class="form-control" />
+                    <span asp-validation-for="UnitStock" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

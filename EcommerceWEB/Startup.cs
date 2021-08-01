@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using AutoMapper;
+using EcommerceAPI.DataAccess.EFModel;
 
 namespace EcommerceWEB
 {
@@ -29,25 +30,28 @@ namespace EcommerceWEB
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AppDbContextPool<EcommerceContext>(options =>
-            //{
-            //    //options.UseInMemoryDatabase("EcommerceDB");
-            //    options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
-            //});
-            services.AddDbContextPool<EcommerceContext>(options =>
+            services.AddDbContext<EcommerceContext>(options =>
                    options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"))
             );
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            
+            services.AddIdentity<User, IdentityRole>().AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<EcommerceContext>();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+            });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             
-
             services.AddControllersWithViews();
-            // add cookie 
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie();
+
+            services.AddAuthorization(options =>
+                                        options.AddPolicy("Admin",
+                                        policy => policy.RequireRole("Admin")));
 
             services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
         }
