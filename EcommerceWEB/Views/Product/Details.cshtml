@@ -8,6 +8,7 @@
 @section Styles{
     <link href="~/css/Product/details.css" rel="stylesheet" />
 }
+
 @{
     var folderPath = "../../Images/ProductImages/" + @Model.Image;
 }
@@ -34,12 +35,12 @@
             <div class="">@Model.Price <span> VND</span></div>
             <div class=""><span>Unit Quantity: </span>@Model.UnitStock</div>
             <div class=""><span>Create Date: </span>@Model.Create_at</div>
-            @{
-                if (!string.IsNullOrEmpty(Model.Modify_at))
-                {
+         
+                @if (!string.IsNullOrEmpty(Model.Modify_at))
+                 {
                     <div class=""><span>Modify Date: </span>@Model.Modify_at</div>
-                }
-            }
+                 }
+            
         </div>
     </div>
     
@@ -57,6 +58,6 @@
 @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary mr-2" })
 <a class="btn btn-primary" asp-action="Index">Back to List</a>
 
-@section Scripts{
+
 
 

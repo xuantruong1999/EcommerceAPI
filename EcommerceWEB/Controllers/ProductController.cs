@@ -72,8 +72,7 @@ namespace EcommerceWEB.Controllers
             }
             else
             {
-                ModelState.AddModelError("", "Params are invalid");
-                return View(newProduct);
+                return View("Error", new ErrorViewModel("Params are invalid"));
             }
         }
 
@@ -168,7 +167,7 @@ namespace EcommerceWEB.Controllers
 
                 _unitOfwork.ProductResponsitory.Delete(productToDelete);
                 _unitOfwork.Save();
-                return View("Index");
+                return RedirectToAction("Index");
             }
             catch(Exception ex)
             {
