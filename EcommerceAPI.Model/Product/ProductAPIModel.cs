@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
-namespace EcommerceAPI.DataAccess.EFModel
+namespace EcommerceAPI.Model.Product
 {
-    public class Product
+    public class ProductAPIModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -16,10 +16,5 @@ namespace EcommerceAPI.DataAccess.EFModel
         public Decimal? Price { get; set; }
         [Required]
         public Guid CategoryID { get; set; }
-        [Required]
-        public CategoryProduct CategoryProduct { get; set; }
-        public DateTime? Create_at { get; set; }
-        public DateTime? Modify_at { get; set; }
-
     }
 }

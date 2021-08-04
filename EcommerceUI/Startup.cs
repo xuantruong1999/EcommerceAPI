@@ -40,7 +40,6 @@ namespace EcommerceUI
 
             services.AddDbContext<EcommerceContext>(options =>
             {
-                 //options.UseInMemoryDatabase("EcommerceDB");
                  options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
            });
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -65,7 +64,7 @@ namespace EcommerceUI
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers(); 
             });
         }
     }
