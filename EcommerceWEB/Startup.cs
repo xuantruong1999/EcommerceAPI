@@ -20,6 +20,7 @@ namespace EcommerceWEB
 {
     public class Startup
     {
+        private string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,6 +31,15 @@ namespace EcommerceWEB
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://localhost:3000");
+                                                         
+                                  });
+            });
             services.AddDbContext<EcommerceContext>(options =>
                    options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"))
             );
@@ -74,6 +84,8 @@ namespace EcommerceWEB
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthentication();
 

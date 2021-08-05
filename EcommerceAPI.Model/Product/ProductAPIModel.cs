@@ -15,6 +15,8 @@ namespace EcommerceAPI.Model.Product
         public string Description { get; set; }
         public Decimal? Price { get; set; }
         [Required]
+        public string CategoryName {get; set;}
+        [Required]
         public Guid CategoryID { get; set; }
     }
 }
