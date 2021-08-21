@@ -1,119 +1,88 @@
-﻿using EcommerceAPI.DataAccess.Infrastructure;
+﻿using AutoMapper;
+using EcommerceAPI.DataAccess.EFModel;
+using EcommerceAPI.DataAccess.Infrastructure;
 using EcommerceAPI.Model.Product;
+using EcommerceAPI.UI.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace EcommerceAPI.UI.Controllers
+namespace EcommerceWEB.Controllers
 {
+    //[Authorize]
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("api/{controller}")]
     public class ProductsController : BaseController
     {
-        public ProductsController(IUnitOfWork unitOfWork) : base(unitOfWork) { }
-        // GET: ProductsController
-        
+        private IConfiguration _configuration;
+
+        public ProductsController(IHostingEnvironment hostingEnvironment, IUnitOfWork unitOfWork, IConfiguration config)
+            : base(hostingEnvironment, unitOfWork)
+        {
+            _configuration = config;
+        }
+
         public ActionResult Index()
         {
-            var listProduct = _unitOfWork.ProductResponsitory.GetAll().Select(p =>
-            new ProductAPIModel
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Image = p.Image,
-                UnitStock = p.UnitStock,
-                Rating = p.Rating,
-                Description = p.Description,
-                Price = p.Price,
-                CategoryID = p.CategoryID
-            });
-            return Ok(listProduct.ToList());
+            //var urlImg = _httpContext.HttpContext.Request.Scheme + $"://" + _httpContext.HttpContext.Request.Host.Value + $"/Images/ProductImages/";
+            var urlImg = $"https://localhost:5001/images/productimages/";
+            var products = from p in _unitOfWork.ProductResponsitory.GetAll()
+                           join c in _unitOfWork.CategoryProductResponsitory.GetAll()
+                           on p.CategoryID equals c.Id
+                           select new ProductAPIModel()
+                           {
+                               Id = p.Id,
+                               Name = p.Name,
+                               Image = urlImg + p.Image,
+                               UnitStock = p.UnitStock,
+                               Rating = p.Rating,
+                               Description = p.Description,
+                               Price = p.Price,
+                               CategoryName = p.CategoryProduct.Name,
+                               CategoryID = p.CategoryID
+                           };
+
+            return Ok(products);
         }
 
-        [HttpGet("{id}")]
-        // GET: ProductsController/Details/5
-        public ActionResult Details(string id)
+        [Route("Details")]
+        public IActionResult Details([FromQuery] string id)
         {
-            var Id = Guid.Parse(id);
-            var product = _unitOfWork.ProductResponsitory.GetByID(Id);
-            var productToView = new ProductAPIModel
+            if (string.IsNullOrEmpty(id))
+                return BadRequest();
+
+            var convertID = Guid.Parse(id);
+            var product = _unitOfWork.ProductResponsitory.GetByID(convertID);
+
+            if (product != null)
             {
-                Id = product.Id,
-                Name = product.Name,
-                Image = product.Image,
-                UnitStock = product.UnitStock,
-                Rating = product.Rating,
-                Description = product.Description,
-                Price = product.Price,
-                CategoryID = product.CategoryID
-            };
-            return Ok(productToView);
+                //var urlImg = _httpContext.HttpContext.Request.Scheme + $"://" + _httpContext.HttpContext.Request.Host.Value + $"/Images/ProductImages/";
+                var urlImg = $"https://localhost:5001/images/productimages/";
+                var category = _unitOfWork.CategoryProductResponsitory.GetByID(product.CategoryID);
+                var productToView = new ProductAPIModel()
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Image = urlImg + product.Image,
+                    UnitStock = product.UnitStock,
+                    Rating = product.Rating,
+                    Description = product.Description,
+                    Price = product.Price,
+                    CategoryName = category.Name,
+                    CategoryID = product.CategoryID
+                };
+                return Ok(productToView);
+            }
+
+            return NotFound();
         }
-
-        // GET: ProductsController/Create
-        //public ActionResult Create()
-        //{
-        //    return View();
-        //}
-
-        // POST: ProductsController/Create
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Create(IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
-
-        // GET: ProductsController/Edit/5
-        //public ActionResult Edit(int id)
-        //{
-        //    return View();
-        //}
-
-        // POST: ProductsController/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
-
-        // GET: ProductsController/Delete/5
-        //public ActionResult Delete(int id)
-        //{
-        //    return View();
-        //}
-
-        // POST: ProductsController/Delete/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Delete(int id, IFormCollection collection)
-        //{
-        //    try
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
     }
 }

@@ -45,12 +45,6 @@ namespace EcommerceAPI.DataAccess
                     .HasForeignKey(product => product.CategoryID)
                     .IsRequired()
                     .OnDelete(DeleteBehavior.Cascade);
-               
-
-
-
-
-
         }
     }
 }

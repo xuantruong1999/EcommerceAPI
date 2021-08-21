@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using EcommerceAPI.DataAccess;
 using EcommerceAPI.DataAccess.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,14 +12,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using AutoMapper;
 using EcommerceAPI.DataAccess.EFModel;
 
 namespace EcommerceWEB
 {
     public class Startup
     {
-        private string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,37 +28,27 @@ namespace EcommerceWEB
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
-            {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                  builder =>
-                                  {
-                                      builder.WithOrigins("http://localhost:3000");
-                                                         
-                                  });
-            });
+            
             services.AddDbContext<EcommerceContext>(options =>
                    options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"))
             );
             
             services.AddIdentity<User, IdentityRole>().AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<EcommerceContext>();
-
+            
             services.Configure<IdentityOptions>(options =>
             {
                 options.User.RequireUniqueEmail = true;
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            
+
             services.AddControllersWithViews();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie();
 
-            services.AddAuthorization(options =>
-                                        options.AddPolicy("Admin",
-                                        policy => policy.RequireRole("Admin")));
+            services.AddAuthorization(options => options.AddPolicy("Admin", policy => policy.RequireRole("Admin")));
 
             services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
         }
@@ -85,8 +72,6 @@ namespace EcommerceWEB
 
             app.UseRouting();
 
-            app.UseCors(MyAllowSpecificOrigins);
-
             app.UseAuthentication();
 
             app.UseAuthorization();
@@ -97,6 +82,7 @@ namespace EcommerceWEB
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+           
         }
     }
 }

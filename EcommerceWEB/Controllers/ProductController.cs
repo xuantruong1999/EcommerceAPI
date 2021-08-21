@@ -113,10 +113,14 @@ namespace EcommerceWEB.Controllers
                     productToUpdate.Description = model.Description;
                     productToUpdate.CategoryID = Guid.Parse(model.CategoryID);
                     productToUpdate.Modify_at = DateTime.Now;
-                    
-                    if(model.File != null)
+                    string temp = productToUpdate.Image;
+                    if (model.File != null)
                     {
                         productToUpdate.Image = UploadFile(model.File);
+                        if (!string.IsNullOrEmpty(temp))
+                        {
+                            DeleteFile(temp);
+                        }
                     }
 
                     _unitOfwork.ProductResponsitory.Update(productToUpdate);
@@ -201,7 +205,12 @@ namespace EcommerceWEB.Controllers
             
             return listCate;
         }
-       private string UploadFile(IFormFile image)
+
+        //
+        // Summary:
+        //    Implement upload image to folder content
+        //    Return string name image uploaded successfully
+        private string UploadFile(IFormFile image)
        {
             if (image == null) return null;
             try
@@ -222,6 +231,22 @@ namespace EcommerceWEB.Controllers
             }
             
        }
+
+        //
+        // Summary:
+        //  Give string name image to delete
+        private void DeleteFile(string imageName)
+        {
+            if (imageName == null) return;
+
+            string path = _hostingEnvironment.WebRootPath + "\\Images\\ProductImages\\" + imageName;
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+
+            return;
+        }
 
     }
 }
