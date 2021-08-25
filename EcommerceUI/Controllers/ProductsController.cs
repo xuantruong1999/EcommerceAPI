@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace EcommerceWEB.Controllers
 {
-    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : BaseController
@@ -33,7 +32,7 @@ namespace EcommerceWEB.Controllers
         public ActionResult Index()
         {
             //var urlImg = _httpContext.HttpContext.Request.Scheme + $"://" + _httpContext.HttpContext.Request.Host.Value + $"/Images/ProductImages/";
-            var urlImg = $"https://localhost:5001/images/productimages/";
+            var urlImg = $"http://127.0.0.1:5000/images/productimages/";
             var products = from p in _unitOfWork.ProductResponsitory.GetAll()
                            join c in _unitOfWork.CategoryProductResponsitory.GetAll()
                            on p.CategoryID equals c.Id
@@ -65,7 +64,7 @@ namespace EcommerceWEB.Controllers
             if (product != null)
             {
                 //var urlImg = _httpContext.HttpContext.Request.Scheme + $"://" + _httpContext.HttpContext.Request.Host.Value + $"/Images/ProductImages/";
-                var urlImg = $"https://localhost:5001/images/productimages/";
+                var urlImg = $"http://127.0.0.1:5000/images/productimages/";
                 var category = _unitOfWork.CategoryProductResponsitory.GetByID(product.CategoryID);
                 var productToView = new ProductAPIModel()
                 {

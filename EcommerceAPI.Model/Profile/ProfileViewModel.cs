@@ -7,7 +7,10 @@ namespace EcommerceAPI.Model.Profile
 {
     public class ProfileViewModel
     {
-
+        public ProfileViewModel()
+        {
+            Avatar = "profile-icon.jpg";
+        }
         public string Avatar { get; set; }
         [Display(Name = "First Name")]
         public string FirstName { get; set; }

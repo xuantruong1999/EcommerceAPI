@@ -61,7 +61,9 @@ namespace EcommerceUI
             services.AddScoped<ITokenService, TokenService>();
 
             //Controller router config response format
-            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddControllers()
+            .AddJsonOptions(options =>
+               options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
             // Adding Authentication  
             services.AddAuthentication(options =>

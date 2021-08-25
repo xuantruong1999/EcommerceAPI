@@ -1,10 +1,12 @@
 ﻿using EcommerceAPI.DataAccess.EFModel;
+using EcommerceAPI.DataAccess.Infrastructure;
 using EcommerceAPI.Model.User;
 using EcommerceAPI.UI.Controllers;
 using EcommerceAPI.UI.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EcommerceWEB.Controllers
@@ -17,7 +19,7 @@ namespace EcommerceWEB.Controllers
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
         private ITokenService _tokenService;
-        public UsersController(IConfiguration config, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, ITokenService tokenService) : base()
+        public UsersController(IConfiguration config, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, ITokenService tokenService, IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _config = config;
             _userManager = userManager;
@@ -29,30 +31,26 @@ namespace EcommerceWEB.Controllers
         [Route("login")]
         public async  Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
-            var user = await _userManager.FindByNameAsync(loginModel.Username);
-            if (user != null && await _userManager.CheckPasswordAsync(user, loginModel.Password))
+            var userDb = await _userManager.FindByNameAsync(loginModel.Username);
+            if (userDb != null && await _userManager.CheckPasswordAsync(userDb, loginModel.Password))
             {
-                ResonseSuccessModel response = new ResonseSuccessModel()
-                {
-                    Status = 200,
-                    Message = "Success",
-                };
+                var avatar = _unitOfWork.ProfileResponsitory.Find(p => p.UserID == userDb.Id).FirstOrDefault()?.Avatar;
 
-                string token = _tokenService.GenerateTokenJWT(user.Id, _config["JWT:Secret"], _config["JWT:ValidIssuer"], _config["JWT:ValidAudience"]);
-                response.Token.Add("JWT", token);
-                response.Data = user;
-                return Ok(response);
+                UserApiModel user = new UserApiModel()
+                {
+                    Id = userDb.Id,
+                    UserName = userDb.UserName,
+                    PhoneNumber = userDb.PhoneNumber,
+                    Avatar = avatar ?? "profile-icon.jpg",
+                    Email = userDb.Email
+                };
+                string token = _tokenService.GenerateTokenJWT(userDb.Id, _config["JWT:Secret"], _config["JWT:ValidIssuer"], _config["JWT:ValidAudience"]);
+                return Ok(new { user , token });
 
             }
             else
             {
-                var response = new ResponseModel()
-                {
-                    Status = 201,
-                    Message = $"Can not find username: {loginModel.Username}"
-                };
-
-                return Ok(response);
+                return NoContent();
             }
         }
     }
