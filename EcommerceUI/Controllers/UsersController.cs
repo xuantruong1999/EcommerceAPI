@@ -35,13 +35,13 @@ namespace EcommerceWEB.Controllers
             if (userDb != null && await _userManager.CheckPasswordAsync(userDb, loginModel.Password))
             {
                 var avatar = _unitOfWork.ProfileResponsitory.Find(p => p.UserID == userDb.Id).FirstOrDefault()?.Avatar;
-
+                var baseUrl = "http://127.0.0.1:5000/images/userimages/";
                 UserApiModel user = new UserApiModel()
                 {
                     Id = userDb.Id,
                     UserName = userDb.UserName,
                     PhoneNumber = userDb.PhoneNumber,
-                    Avatar = avatar ?? "profile-icon.jpg",
+                    Avatar =  baseUrl + avatar ?? "profile-icon.jpg",
                     Email = userDb.Email
                 };
                 string token = _tokenService.GenerateTokenJWT(userDb.Id, _config["JWT:Secret"], _config["JWT:ValidIssuer"], _config["JWT:ValidAudience"]);
