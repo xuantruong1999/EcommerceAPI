@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace EcommerceWEB.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : BaseController

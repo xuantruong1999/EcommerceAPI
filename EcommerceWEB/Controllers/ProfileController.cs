@@ -86,16 +86,17 @@ namespace EcommerceWEB.Controllers
                         profileInDB.FirstName = profile.FirstName;
                         profileInDB.LastName = profile.LastName;
                         profileInDB.Address = profile.Address;
-                        
-                        if(profile.Avatar != null && profileInDB.Avatar != profile.Avatar)
+
+                        if (profile.Avatar != null && profileInDB.Avatar != profile.Avatar)
+                        {
                             profileInDB.Avatar = profile.Avatar;
+                        }
                         
                         _unitOfwork.ProfileResponsitory.Update(profileInDB);
                         _unitOfwork.Save();
 
-                        if (!string.IsNullOrEmpty(profile.Avatar)
-                            && !string.IsNullOrEmpty(oldImage)
-                            && profile.Avatar != oldImage)
+                        if (!string.IsNullOrEmpty(profile.Avatar) && !string.IsNullOrEmpty(oldImage) && profile.Avatar != oldImage 
+                            && oldImage != "profile-icon.png")
                         {
                             DeleteImageExisted(oldImage);
                         }
@@ -110,11 +111,15 @@ namespace EcommerceWEB.Controllers
                             FirstName = profile.FirstName,
                             LastName = profile.LastName,
                             Address = profile.Address,
-                            Avatar = profile.Avatar,
+                            Avatar = "profile-icon.png", //default icon avatar
                             UserID = profile.UserID
                         };
 
-                        if (profile.Avatar != null) profileToupdate.Avatar = profile.Avatar;
+                        if (profile.Avatar != null)
+                        {
+                            profileToupdate.Avatar = profile.Avatar;
+                        } 
+
                         _unitOfwork.ProfileResponsitory.Insert(profileToupdate);
                         _unitOfwork.Save();
                         return View("ViewProFile", _mapper.Map<ProfileViewModel>(profileToupdate));

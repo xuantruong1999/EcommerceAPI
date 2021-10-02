@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace EcommerceWEB.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize]
     [Route("{controller}/{action=index}")]
     public class UserController : BaseController
     {

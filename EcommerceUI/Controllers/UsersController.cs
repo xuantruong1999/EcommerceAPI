@@ -3,6 +3,7 @@ using EcommerceAPI.DataAccess.Infrastructure;
 using EcommerceAPI.Model.User;
 using EcommerceAPI.UI.Controllers;
 using EcommerceAPI.UI.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace EcommerceWEB.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : BaseController
@@ -29,6 +31,7 @@ namespace EcommerceWEB.Controllers
 
         [HttpPost]
         [Route("login")]
+        [AllowAnonymous]
         public async  Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             var userDb = await _userManager.FindByNameAsync(loginModel.Username);
@@ -41,7 +44,7 @@ namespace EcommerceWEB.Controllers
                     Id = userDb.Id,
                     UserName = userDb.UserName,
                     PhoneNumber = userDb.PhoneNumber,
-                    Avatar =  baseUrl + avatar ?? "profile-icon.jpg",
+                    Avatar =  baseUrl + avatar ?? "profile-icon.png",
                     Email = userDb.Email
                 };
                 string token = _tokenService.GenerateTokenJWT(userDb.Id, _config["JWT:Secret"], _config["JWT:ValidIssuer"], _config["JWT:ValidAudience"]);
@@ -52,6 +55,15 @@ namespace EcommerceWEB.Controllers
             {
                 return NoContent();
             }
+        }
+
+        [HttpGet]
+        [Route("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await _tokenService.DeactivateCurrentAsync();
+            return NoContent();
         }
     }
 }

@@ -11,11 +11,15 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Newtonsoft;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,17 +49,17 @@ namespace EcommerceUI
                                       builder.WithOrigins("http://localhost:3001").AllowAnyHeader().AllowAnyMethod();
                                   });
             });
-            
+
             //Add Dbcontext
             services.AddDbContext<EcommerceContext>(options =>
             {
-                 options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
-           });
-            
+                options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
+            });
+
             //Add Identity
             services.AddIdentity<User, IdentityRole>().AddRoles<IdentityRole>()
                .AddEntityFrameworkStores<EcommerceContext>();
-            
+
             // Add Services that my definion
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
@@ -87,8 +91,17 @@ namespace EcommerceUI
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
             });
-        }
 
+            services.AddTransient<TokenServiceMiddleware>();
+            
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetSection("Redis")["ConnectionString"];
+            });
+            services.Add(ServiceDescriptor.Singleton<IDistributedCache, RedisCache>());
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -102,6 +115,10 @@ namespace EcommerceUI
             app.UseRouting();
 
             app.UseCors(MyAllowSpecificOrigins);
+            
+            app.UseAuthentication();
+
+            app.UseMiddleware<TokenServiceMiddleware>();
 
             app.UseAuthorization();
 

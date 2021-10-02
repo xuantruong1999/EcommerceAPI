@@ -72,8 +72,6 @@ namespace EcommerceWEB
 
             app.UseRouting();
 
-            app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -82,7 +80,6 @@ namespace EcommerceWEB
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-           
         }
     }
 }
