@@ -1,17 +1,29 @@
 using EcommerceAPI.DataAccess;
+using EcommerceAPI.DataAccess.EFModel;
 using EcommerceAPI.DataAccess.Infrastructure;
+using EcommerceAPI.UI.Services;
+using EcommerceAPI.UI.Services.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.Newtonsoft;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace EcommerceUI
@@ -38,15 +50,58 @@ namespace EcommerceUI
                                   });
             });
 
+            //Add Dbcontext
             services.AddDbContext<EcommerceContext>(options =>
             {
-                 //options.UseInMemoryDatabase("EcommerceDB");
-                 options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
-           });
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-        }
+                options.UseSqlServer(Configuration.GetConnectionString("EcommerceContext"));
+            });
 
+            //Add Identity
+            services.AddIdentity<User, IdentityRole>().AddRoles<IdentityRole>()
+               .AddEntityFrameworkStores<EcommerceContext>();
+
+            // Add Services that my definion
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ITokenService, TokenService>();
+
+            //Controller router config response format
+            services.AddControllers()
+            .AddJsonOptions(options =>
+               options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
+            // Adding Authentication  
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+
+            // Adding Jwt Bearer  
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = Configuration["JWT:ValidAudience"],
+                    ValidIssuer = Configuration["JWT:ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
+                };
+            });
+
+            services.AddTransient<TokenServiceMiddleware>();
+            
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetSection("Redis")["ConnectionString"];
+            });
+            services.Add(ServiceDescriptor.Singleton<IDistributedCache, RedisCache>());
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -60,12 +115,16 @@ namespace EcommerceUI
             app.UseRouting();
 
             app.UseCors(MyAllowSpecificOrigins);
+            
+            app.UseAuthentication();
+
+            app.UseMiddleware<TokenServiceMiddleware>();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers(); 
             });
         }
     }

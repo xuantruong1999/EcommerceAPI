@@ -1,0 +1,63 @@
+﻿@model EcommerceAPI.Model.Product.ProductDetailViewModel
+
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles{
+    <link href="~/css/Product/details.css" rel="stylesheet" />
+}
+
+@{
+    var folderPath = "../../Images/ProductImages/" + @Model.Image;
+}
+
+<h1>Detail</h1>
+
+<div id="cover" class="rounded shadow">
+    <div class="row">
+        <div id="image" class="col-4">
+            <div>
+                <img class="img-fluid" src="@folderPath" />
+            </div>
+        </div>
+        <div id="content" class="col-8">
+            <div class="">@Model.Name</div>
+            <div class="additonal">
+                @for(var i = 1; i < Model.Rating; i++)
+                 { 
+                    <span class="fa fa-star"></span>
+                 }
+                |
+                <span>19K Evaluate</span>
+            </div>
+            <div class="">@Model.Price <span> VND</span></div>
+            <div class=""><span>Unit Quantity: </span>@Model.UnitStock</div>
+            <div class=""><span>Create Date: </span>@Model.Create_at</div>
+         
+                @if (!string.IsNullOrEmpty(Model.Modify_at))
+                 {
+                    <div class=""><span>Modify Date: </span>@Model.Modify_at</div>
+                 }
+            
+        </div>
+    </div>
+    
+</div>
+<div class="mt-2 rounded shadow mb-2" id="description">
+    <div class="tab-header">
+        <span class="" id="tab">Description</span>
+    </div>
+    <div class="p-2">
+        @Model.Description
+    </div>
+</div>
+
+
+@Html.ActionLink("Edit", "Update", new { Id = Model.Id }, new { @class = "btn btn-primary mr-2" })
+<a class="btn btn-primary" asp-action="Index">Back to List</a>
+
+
+
+

@@ -1,0 +1,32 @@
+﻿#cover{
+    height: auto;
+    width: 100%;
+    background: white;
+
+}
+#common-content{
+}
+
+#description {
+    height: auto;
+    width: 100%;
+    background: white;
+}
+
+#image {
+    text-align:center
+}
+
+#content {
+}
+.tab-header {
+    padding: 0;
+    margin: 0;
+}
+#tab {
+    background: blue;
+    color: white;
+    padding: 5px;
+    border: none;
+    border-radius: 0 15px 0 0;
+}

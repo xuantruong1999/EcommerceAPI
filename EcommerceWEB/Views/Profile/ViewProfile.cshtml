@@ -1,0 +1,56 @@
+﻿@model EcommerceAPI.Model.Profile.ProfileViewModel
+
+@section Styles{ 
+    <link href="/css/User/createProfile.css" rel="stylesheet" />
+}
+
+@{ 
+    string rootPath = "../../Images/UserImages/";
+    string fileName = Model.Avatar ?? "profile-icon.jpg";
+    string fullPath = rootPath + fileName;
+}
+<div class="container">
+    <form asp-action="UpdateProfile" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger mx-auto"></div>
+        <div id="cover" class="row">
+            <div class="col col-lg-3 col-md-3 col-sm-6" id="left-col">
+                @{
+                    if (Model == null || Model?.Avatar == null)
+                    {
+                        <div class="" id="avatar-block  p-1 border">
+
+                        </div>
+                        <div class="mt-2">
+                            <input type="file" class="form-control-file" accept="image/png, image/jpg" name="formFile" value="" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="avatar-block text-center p-1 border">
+                            <img src="@fullPath" class="img-fluid" alt="Alternate Text" />
+                        </div>
+                        <div class="mt-2">
+                            <input type="file" class="form-control-file" accept="image/png, image/jpg" name="formFile" value="" />
+                        </div>
+                    }
+                }
+            </div>
+            <div class="col col-lg-9 col-md-9 col-sm-6" id="right-col">
+                <div class="form-inline">
+                    <input asp-for="FirstName" placeholder="First Name" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                    <input asp-for="LastName" placeholder="LastName" class="form-control ml-2" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3">
+                    <input asp-for="Address" placeholder="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+                <input asp-for="UserID" type="hidden" value="@Model?.UserID"/>
+                <div class="form-group">
+                    <input type="submit" value="UpdateProfile" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -17,9 +17,8 @@ namespace EcommerceAPI.DataAccess.Infrastructure
         void Delete(T entity);
         void Delete(object Id);
         void Delete(Expression<Func<T, bool>> predicate);
-        void Save();
         IQueryable<T> Filter(Expression<Func<T, bool>> predicate);
-        IQueryable Find(Expression<Func<T, bool>> predicate);
+        IQueryable<T> Find(Expression<Func<T, bool>> predicate);
 
     }
 }
