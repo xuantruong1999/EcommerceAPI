@@ -32,6 +32,24 @@ namespace EcommerceWEB.Controllers
             _tokenService = tokenService;
         }
 
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserRegisterModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid data.");
+            User user = new User()
+            {
+                UserName = model.UserName,
+                PhoneNumber = model.PhoneNumber,
+                Email = model.Email,
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded) return BadRequest("Create process can not complete! try again");
+            return Ok();
+
+        }
+
         [HttpPost]
         [Route("login")]
         [AllowAnonymous]
@@ -109,7 +127,10 @@ namespace EcommerceWEB.Controllers
             return NoContent();
         }
 
-       
+
+
+
+       //private method 
         private bool RevokeRefreshToken()
         {
             string token = _tokenService.GetCurrentAsync();

@@ -7,8 +7,11 @@ namespace EcommerceAPI.DataAccess.EFModel
 {
     public class User : IdentityUser
     {
+        [PersonalData]
         public Profile Profile { get; set; }
+        [PersonalData]
         public string RefreshToken { get; set; }
+        [PersonalData]
         public DateTime RefreshTokenTimeStamp { get; set; }
     }
 }
