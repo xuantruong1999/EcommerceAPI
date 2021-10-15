@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using EcomerceAPI.Services;
 
 namespace EcommerceWEB.Controllers
 {
@@ -19,6 +20,7 @@ namespace EcommerceWEB.Controllers
     public class UserController : BaseController
     {
         protected readonly IHostingEnvironment _hostingEnvironment;
+        private readonly UsersService _userService;
         public UserController(UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork, IHostingEnvironment hostingEnvironment) : base(userManager, signInmanager, roleManager, mapper, unitOfWork)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -27,15 +29,7 @@ namespace EcommerceWEB.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var listUser = _userManager.Users.Where(u => u.UserName != _signInmanager.Context.User.Identity.Name);
-            List<UserViewModel> listViewuser = new List<UserViewModel>();
-
-            foreach(var item in listUser)
-            {
-                UserViewModel user = _mapper.Map<UserViewModel>(item);
-                listViewuser.Add(user);
-            }
-
+            var listViewuser = _userService.GetAllUsers();
             return View(listViewuser);
         }
 
