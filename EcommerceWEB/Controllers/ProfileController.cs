@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceWEB.Controllers
 {
-    [Authorize]
+    [Authorize("Admin")]
     public class ProfileController : BaseController
     {
         private IHostingEnvironment _hostingEnvironment;
