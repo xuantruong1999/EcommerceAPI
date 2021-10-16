@@ -46,7 +46,7 @@ namespace EcommerceWEB.Controllers
                     if (result.Succeeded)
                     {
                         if(Url.IsLocalUrl(returnURL))
-                            return Redirect(returnURL);
+                            return Redirect("~/");
                         return Redirect(Url.Content("~/"));
                     }
                     else
