@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceAPI.Model", "Ecomm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceAPI.UI", "EcommerceUI\EcommerceAPI.UI.csproj", "{A0AB6C08-80ED-4BF8-B1C9-A7DC815810CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcomerceAPI.Services", "EcomerceAPI.Services\EcomerceAPI.Services.csproj", "{947073F6-5B93-4B32-9DF7-8D85F4240E75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcommerceAPI.Services", "EcomerceAPI.Services\EcommerceAPI.Services.csproj", "{947073F6-5B93-4B32-9DF7-8D85F4240E75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

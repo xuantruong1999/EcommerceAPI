@@ -14,10 +14,11 @@ namespace EcomerceAPI.Services
         protected readonly IMapper _mapper;
         protected readonly IUnitOfWork _unitOfwork;
         protected readonly UserManager<User> _userManager;
-        public BaseService(IUnitOfWork unitOfWork, UserManager<User> userManager)
+        public BaseService(IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper)
         {
             _unitOfwork = unitOfWork;
             _userManager = userManager;
+            _mapper = mapper;
         }
     }
 }

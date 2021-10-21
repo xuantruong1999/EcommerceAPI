@@ -1,16 +1,31 @@
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace EcommerceAPI.Model
 {
-    public class ErrorViewModel
+    public abstract class Result
     {
-        public ErrorViewModel(string message)
+        protected Result()
         {
-            Message = message;
+            ErrorMessage = null;
         }
-        public string RequestId { get; set; }
+        public Result(string errorMessage)
+        {
+            ErrorMessage = errorMessage;
+        }
+        public string ErrorMessage { get; set; }
+        public bool Errored => ErrorMessage != null; 
+        public static Success WithOutErrored => new Success();
+        public static implicit operator Result(string errorMessage) => new ErrorViewModel(errorMessage);
+    }
+    public class ErrorViewModel : Result
+    {
+        public ErrorViewModel(string errorMessage) : base(errorMessage) {}
+    }
 
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-        public string Message { get; set; }
+    public class Success : Result
+    {
+
     }
 }
+

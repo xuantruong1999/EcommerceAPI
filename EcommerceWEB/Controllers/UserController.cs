@@ -20,10 +20,11 @@ namespace EcommerceWEB.Controllers
     public class UserController : BaseController
     {
         protected readonly IHostingEnvironment _hostingEnvironment;
-        private readonly UsersService _userService;
-        public UserController(UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork, IHostingEnvironment hostingEnvironment) : base(userManager, signInmanager, roleManager, mapper, unitOfWork)
+        private readonly IUsersService _userService;
+        public UserController(IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork, IHostingEnvironment hostingEnvironment) : base(userManager, signInmanager, roleManager, mapper, unitOfWork)
         {
             _hostingEnvironment = hostingEnvironment;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -58,29 +59,16 @@ namespace EcommerceWEB.Controllers
                 List<string> roles = new List<string>();
                 roles = _roleManager.Roles.Select(x => x.Name).ToList();
                 ViewData["roles"] = roles;
-                var user = _mapper.Map<User>(model);
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded) 
+
+                var result = await _userService.CreateUser(model);
+                if (result.Errored)
                 {
-                    
-                    var addRoletoUser = _userManager.AddToRolesAsync(user, (IEnumerable<string>)model.Roles);
-                    if (addRoletoUser.Result.Succeeded)
-                    {
-                        return RedirectToAction("Index");
-                    } 
-                    else
-                    {
-                        ModelState.AddModelError("", "Add role to user failed");
-                        return View();
-                    }
+                    ModelState.AddModelError("", result.ErrorMessage);
+                    return View();
                 }
                 else
                 {
-                    foreach(var err in result.Errors)
-                    {
-                        ModelState.AddModelError("", err.Description);
-                    }
-                    return View();
+                    return RedirectToAction("Index", "Home");
                 }
             }
             else
