@@ -2,23 +2,31 @@
     <form class="m-auto" asp-for="UpdateRoleUser" method="post">
         <h2 class="text-infor">Update Role</h2>
         <div class="form-group">
-            @foreach (var role in ViewData["roles"] as Dictionary<string, bool>)
+            @if (ViewData["roles"] != null)
             {
-                if (role.Value)
-                {   
-                    <div class="form-check">
-                        <input name="roles" class="" type="checkbox" value="@role.Key" checked />
-                        <label>@role.Key</label>
-                    </div>
-                }
-                else
+                @foreach (var role in ViewData["roles"] as Dictionary<string, bool>)
                 {
-                    <div class="form-check">
-                        <input name="roles" class="" type="checkbox" value="@role.Key" />
-                        <label>@role.Key</label>
-                    </div>
+                    if (role.Value)
+                    {
+                        <div class="form-check">
+                            <input name="roles" class="" type="checkbox" value="@role.Key" checked />
+                            <label>@role.Key</label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-check">
+                            <input name="roles" class="" type="checkbox" value="@role.Key" />
+                            <label>@role.Key</label>
+                        </div>
+                    }
                 }
             }
+            else
+            {
+                <div asp-validation-summary="All" class="text-danger"></div>
+            }
+
         </div>
         <input name="userID" type="hidden" value="@ViewData["userID"]"/>
         <input type="submit" name="" value="Update"  class="btn btn-primary"/>

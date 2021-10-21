@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using EcomerceAPI.Services;
+using EcommerceAPI.Services;
 
 namespace EcommerceWEB.Controllers
 {
@@ -21,6 +22,7 @@ namespace EcommerceWEB.Controllers
     {
         protected readonly IHostingEnvironment _hostingEnvironment;
         private readonly IUsersService _userService;
+        private readonly ICommonSerivce _commonService;
         public UserController(IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork, IHostingEnvironment hostingEnvironment) : base(userManager, signInmanager, roleManager, mapper, unitOfWork)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -60,7 +62,7 @@ namespace EcommerceWEB.Controllers
                 roles = _roleManager.Roles.Select(x => x.Name).ToList();
                 ViewData["roles"] = roles;
 
-                var result = await _userService.CreateUser(model);
+                var result = await _userService.CreateUserAsync(model);
                 if (result.Errored)
                 {
                     ModelState.AddModelError("", result.ErrorMessage);
@@ -83,25 +85,23 @@ namespace EcommerceWEB.Controllers
                 return View("Edit");
             }
         }
-
+        
+        [HttpGet]
         public async Task<IActionResult> Update(string id)
         {
             try
             {
-                var user = await _userManager.FindByIdAsync(id);
+                var user = await _userService.GetUserByIDAsync(id);
                 if (user != null)
                 {
-                    UserEditViewModel userEditView = new UserEditViewModel();
-                    userEditView = _mapper.Map<UserEditViewModel>(user);
-                    userEditView.Roles = await _userManager.GetRolesAsync(user);
-                    var userClaims = await _userManager.GetClaimsAsync(user);
-                    userEditView.Claims = userClaims.Select(c => c.Value).ToList();
-                    return View(userEditView);
+                    var userView = _mapper.Map<UserEditViewModel>(user);
+                    userView.Roles = await _userService.GetRoles(user);
+                    return View(userView);
                 }
                 else
                 {
-                    ErrorViewModel err = new ErrorViewModel("User is not existed");
-                    return View("~/Views/Shared/Error.cshtml", err);
+                    ModelState.AddModelError("", "User was not found");
+                    return View();
                 }
             }
             catch(Exception ex)
@@ -117,27 +117,20 @@ namespace EcommerceWEB.Controllers
             {
                 try
                 {
-                    var user = await _userManager.FindByIdAsync(userModel.Id);
-                    if (user == null)
+                    var result = await _userService.UpdateAsync(userModel);
+                    if (result == null)
                     {
                         ErrorViewModel err = new ErrorViewModel("User is not existed");
                         return View("~/Views/Shared/Error.cshtml", err);
                     }
+                    else if (!result.Errored)
+                    {
+                        return Redirect("Index");
+                    }
                     else
                     {
-                        user.Email = userModel.Email;
-                        user.UserName = userModel.UserName;
-                        user.PhoneNumber = userModel.PhoneNumber;
-                        var result = _userManager.UpdateAsync(user);
-                        if (result.Result.Succeeded)
-                        {
-                            return RedirectToAction("Index");
-                        }
-                        else
-                        {
-                            ModelState.AddModelError("", string.Format("Update Fail with username: {0}", userModel.UserName));
-                            return View();
-                        }
+                        ModelState.AddModelError("", result.ErrorMessage); 
+                        return View();
                     }
                 }
                 catch (Exception ex)
@@ -157,24 +150,10 @@ namespace EcommerceWEB.Controllers
         {
             try
             {
-                var checkUserisExist = await _userManager.FindByIdAsync(id);
-                if(checkUserisExist != null)
+                var dicroles = await _userService.GetRolesUserAsync(id);
+                if(dicroles != null)
                 {
-                    var roles =  _roleManager.Roles.Select(r => r.Name).Distinct().ToList();
-                    var roleUser = (List<string>) await _userManager.GetRolesAsync(checkUserisExist);
-                    Dictionary<string, bool> dicRoles = new Dictionary<string, bool>();
-                    foreach(var item in roles)
-                    {
-                        if (roleUser.Contains(item))
-                        {
-                            dicRoles.Add(item, true);
-                        }
-                        else
-                        {
-                            dicRoles.Add(item, false);
-                        }
-                    }
-                    ViewData["roles"] = dicRoles;
+                    ViewData["roles"] = dicroles;
                     ViewData["userID"] = id;
                     return View();
                 }
@@ -190,77 +169,73 @@ namespace EcommerceWEB.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateRoleUser([FromForm] string[] roles, string userID)
         {
-            if (ModelState.IsValid)
+            try
             {
-                if(userID != null)
+                if (ModelState.IsValid)
                 {
-                    var user = await _userManager.FindByIdAsync(userID);
-                    if(user != null)
+                    if (userID == null) return View("error", new ErrorViewModel("User ID is not null"));
+                    var user = await _userService.GetUserByIDAsync(userID);
+                    if (user != null)
                     {
-                        if (roles.Length == 0) 
-                            return View("Error", new ErrorViewModel("User must have one role in application!"));
-                        
-                        var roleUser = await _userManager.GetRolesAsync(user);
-                        await _userManager.RemoveFromRolesAsync(user, roleUser);
-                        var result = await _userManager.AddToRolesAsync(user,(IEnumerable<string>)roles);
-                        
-                        if (result.Succeeded) 
+                        if (roles.Length == 0)
                         {
-                            return RedirectToAction("UpdateRoleUser", new { id = userID});
+                            ModelState.AddModelError("", "User must have one role in application!");
+                            return View();
                         }
-                        else 
-                        { 
-                            return View("Error", new ErrorViewModel($"Update role for user fails"));
+
+                        bool isSuccess = await _userService.UpdateRolesAsync(roles, user);
+                        if (isSuccess)
+                        {
+                            return RedirectToAction("UpdateRoleUser", new { id = userID });
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "Update roles fails");
+                            return View();
                         }
                     }
-                    else 
+                    else
                     {
-                        return View("Error", new ErrorViewModel($"User has not existed with id = {userID}"));
+                        ModelState.AddModelError("", $"User has not existed with id = {userID}");
+                        return View();
+
                     }
+
                 }
                 else
                 {
-                    return View("Error", new ErrorViewModel($"User has not existed with id = {userID}"));
+                    ModelState.AddModelError("", "Params are not valid");
+                    return View();
                 }
             }
-            else 
+            catch(Exception ex)
             {
-                return View("Error", new ErrorViewModel("The params is not valid"));
+                throw ex;
             }
         }
 
         public async Task<IActionResult> Delete(string id)
         {
-            var user =  await _userManager.FindByIdAsync(id);
-            var avatar = _unitOfwork.ProfileResponsitory.GetAll().Where(p => p.UserID.Equals(id)).FirstOrDefault()?.Avatar;
-            if(user != null)
+            if(id != null)
             {
-                var result = _userManager.DeleteAsync(user); //cascade delete profile
-                if (result.Result.Succeeded)
+                var avatar = _unitOfwork.ProfileResponsitory.GetAll().Where(p => p.UserID.Equals(id)).FirstOrDefault()?.Avatar;
+                var result = await _userService.DeleteAsync(id); //cascade delete profile
+                if (!result.Errored)
                 {
-                    DeleteImageExistes(avatar);
+                    _commonService.DeleteImageExistes(avatar);
                     return RedirectToAction("Index");
                 }
                 else
                 {
                     string message = "Can not delete user with ID: " + id;
-                    return View("~/Views/Shared/Error.cshtml", new ErrorViewModel(message));
+                    return View("~/Views/Shared/Error.cshtml", result.ErrorMessage);
                 }
+               
             }
             else
             {
-                return View("~/Views/Shared/Error.cshtml", new ErrorViewModel("User is not exist"));
-            }
-        }
-
-        private void DeleteImageExistes(string fileName)
-        {
-            if (string.IsNullOrEmpty(fileName)) return;
-            string pathFileToDelete = Path.Combine(_hostingEnvironment.WebRootPath, "Images\\UserImages", fileName);
-
-            if (System.IO.File.Exists(pathFileToDelete))
-            {
-                System.IO.File.Delete(pathFileToDelete);
+                string message = "Id is not null";
+                return View("~/Views/Shared/Error.cshtml", new ErrorViewModel(message));
             }
         }
     }
