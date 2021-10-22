@@ -1,4 +1,4 @@
-﻿{
+{
   "EcommerceWEB": {
     "commandName": "Project",
     "launchBrowser": true,
@@ -12,8 +12,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:53905",
-      "sslPort": 44371
+      "applicationUrl": "http://localhost:57654/",
+      "sslPort": 44395
     }
   },
   "profiles": {
@@ -25,6 +25,5 @@
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
       }
     }
-
   }
 }

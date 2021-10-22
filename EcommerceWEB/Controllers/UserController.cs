@@ -222,7 +222,8 @@ namespace EcommerceWEB.Controllers
                 var result = await _userService.DeleteAsync(id); //cascade delete profile
                 if (!result.Errored)
                 {
-                    _commonService.DeleteImageExistes(avatar);
+                    if (avatar != null && avatar != "profile-icon.png")
+                        _commonService.DeleteImageExistes(avatar);
                     return RedirectToAction("Index");
                 }
                 else
