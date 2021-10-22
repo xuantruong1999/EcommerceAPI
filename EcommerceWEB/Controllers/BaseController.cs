@@ -26,6 +26,11 @@ namespace EcommerceWEB.Controllers
             _mapper = mapper;
             _unitOfwork = unitOfWork;
         }
+        public BaseController(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
+
         public BaseController(UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager,IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;

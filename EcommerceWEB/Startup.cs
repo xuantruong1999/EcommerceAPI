@@ -46,6 +46,7 @@ namespace EcommerceWEB
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<ICommonSerivce, CommonService>();
+            services.AddScoped<IProfileService, ProfileService>();
 
             services.AddControllersWithViews();
 

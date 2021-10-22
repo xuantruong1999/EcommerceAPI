@@ -6,7 +6,7 @@
 
 @{ 
     string rootPath = "../../Images/UserImages/";
-    string fileName = Model.Avatar ?? "profile-icon.jpg";
+    string fileName = Model.Avatar ?? "profile-icon.png";
     string fullPath = rootPath + fileName;
 }
 <div class="container">
@@ -15,7 +15,7 @@
         <div id="cover" class="row">
             <div class="col col-lg-3 col-md-3 col-sm-6" id="left-col">
                 @{
-                    if (Model == null || Model?.Avatar == null)
+                    if (Model == null)
                     {
                         <div class="" id="avatar-block  p-1 border">
 

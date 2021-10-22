@@ -15,44 +15,41 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using EcommerceAPI.Model;
 using Microsoft.EntityFrameworkCore;
+using EcommerceAPI.Services;
 
 namespace EcommerceWEB.Controllers
 {
     [Authorize("Admin")]
     public class ProfileController : BaseController
     {
-        private IHostingEnvironment _hostingEnvironment;
-        public ProfileController(IHostingEnvironment hostingEnvironment, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfwork) 
-            : base(userManager, signInmanager, roleManager, mapper, unitOfwork)
+        private readonly IProfileService _profileService;
+        protected readonly IHostingEnvironment _hostingEnviroment;
+        public ProfileController(IMapper mapper, IHostingEnvironment hostingEnviroment, IProfileService profileService) : base(mapper) 
         {
-            _hostingEnvironment = hostingEnvironment;
+            _profileService = profileService;
+            _hostingEnviroment = hostingEnviroment;
         }
         
         [HttpGet]
         public ActionResult ViewProfile()
         {
-            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
-            var userExist = _unitOfwork.UserResponsitory.Find(u => u.UserName == currentUser.Identity.Name).FirstOrDefault();
-            
-            if (userExist != null)
+            try
             {
-                var profileByuserID = _unitOfwork.ProfileResponsitory.Find(profile => profile.UserID == userExist.Id).FirstOrDefault();
-                ProfileViewModel profileToView = new ProfileViewModel();
-                if (profileByuserID == null)
+                System.Security.Claims.ClaimsPrincipal currentUser = this.User;
+                var profile = _profileService.GetProfileByName(currentUser.Identity.Name);
+                if (profile != null)
                 {
-                    profileToView.UserID = userExist.Id;
+                    var profileToView = _mapper.Map<ProfileViewModel>(profile);
                     return View(profileToView);
                 }
                 else
                 {
-                    profileToView = _mapper.Map<ProfileViewModel>(profileByuserID);
-                    return View(profileToView);
+                    return View("Error", new ErrorViewModel("User is not exist"));
                 }
-                
             }
-            else
+            catch(Exception ex)
             {
-                return View("Error", new ErrorViewModel("User is not exist"));
+                throw ex;
             }
         }
         
@@ -65,7 +62,7 @@ namespace EcommerceWEB.Controllers
                 {
                     if (formFile != null)
                     {
-                        string uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, "Images\\UserImages");
+                        string uploadFolder = Path.Combine(_hostingEnviroment.WebRootPath, "Images\\UserImages");
                         string uniqueFilename = Guid.NewGuid().ToString() + "_" + formFile.FileName;
                         string filePath = Path.Combine(uploadFolder, uniqueFilename);
                         using (FileStream avar = new FileStream(filePath, FileMode.Create))
@@ -77,53 +74,15 @@ namespace EcommerceWEB.Controllers
                     }
 
                     // Checking user in Database. Has user existed before?
-                    var profileInDB = _unitOfwork.ProfileResponsitory.Find(p => p.UserID == profile.UserID)?.FirstOrDefault();
-                       
-                    if (profileInDB != null)
+                    var prf = _mapper.Map<EcommerceAPI.DataAccess.EFModel.Profile>(profile);
+                    var result = _profileService.Update(prf);
+                    if (!result) 
                     {
-                        //Update profile
-                        var oldImage = profileInDB.Avatar;
-                        profileInDB.FirstName = profile.FirstName;
-                        profileInDB.LastName = profile.LastName;
-                        profileInDB.Address = profile.Address;
-
-                        if (profile.Avatar != null && profileInDB.Avatar != profile.Avatar)
-                        {
-                            profileInDB.Avatar = profile.Avatar;
-                        }
-                        
-                        _unitOfwork.ProfileResponsitory.Update(profileInDB);
-                        _unitOfwork.Save();
-
-                        if (!string.IsNullOrEmpty(profile.Avatar) && !string.IsNullOrEmpty(oldImage) && profile.Avatar != oldImage 
-                            && oldImage != "profile-icon.png")
-                        {
-                            DeleteImageExisted(oldImage);
-                        }
-
-                        return View("ViewProFile", _mapper.Map<ProfileViewModel>(profileInDB));
+                        ModelState.AddModelError("", "Update profile fails");
+                        return View("ViewProFile", profile);
                     }
-                    else
-                    {
-                        //Insert Profile
-                        EcommerceAPI.DataAccess.EFModel.Profile profileToupdate = new EcommerceAPI.DataAccess.EFModel.Profile()
-                        {
-                            FirstName = profile.FirstName,
-                            LastName = profile.LastName,
-                            Address = profile.Address,
-                            Avatar = "profile-icon.png", //default icon avatar
-                            UserID = profile.UserID
-                        };
 
-                        if (profile.Avatar != null)
-                        {
-                            profileToupdate.Avatar = profile.Avatar;
-                        } 
-
-                        _unitOfwork.ProfileResponsitory.Insert(profileToupdate);
-                        _unitOfwork.Save();
-                        return View("ViewProFile", _mapper.Map<ProfileViewModel>(profileToupdate));
-                    }
+                    return RedirectToAction("ViewProfile");
                 }
                 catch(Exception ex)
                 {
@@ -138,7 +97,7 @@ namespace EcommerceWEB.Controllers
 
         private bool DeleteImageExisted(string fileName)
         {
-            string pathFileToDelete = Path.Combine(_hostingEnvironment.WebRootPath, "Images\\UserImages", fileName);
+            string pathFileToDelete = Path.Combine(_hostingEnviroment.WebRootPath, "Images\\UserImages", fileName);
 
             if (System.IO.File.Exists(pathFileToDelete))
             {
