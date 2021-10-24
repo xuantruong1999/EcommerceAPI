@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using EcommerceAPI.DataAccess.EFModel;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using EcommerceAPI.Services;
 
 namespace EcommerceWEB.Controllers
 {
@@ -21,16 +22,17 @@ namespace EcommerceWEB.Controllers
     public class ProductController : BaseController
     {
         protected readonly IHostingEnvironment _hostingEnvironment;
-        public ProductController(IUnitOfWork unitOfWork, IMapper mapper, IHostingEnvironment hostingEnvironment) : base(mapper, unitOfWork)
+        protected readonly IProductService _productService;
+        public ProductController(IProductService productService, IUnitOfWork unitOfWork, IMapper mapper, IHostingEnvironment hostingEnvironment) : base(mapper, unitOfWork)
         {
             _hostingEnvironment = hostingEnvironment;
+            _productService = productService;
         }
 
         [HttpGet]
         public ActionResult Index()
         {
-            var allProduct = _unitOfwork.ProductResponsitory.GetAll()
-                                        .Select(product => _mapper.Map<ProductViewModel>(product));
+            var allProduct = _productService.GetAll().Select(p => _mapper.Map<ProductViewModel>(p)).ToList();
             return View(allProduct);
         }
 
@@ -49,21 +51,26 @@ namespace EcommerceWEB.Controllers
             {
                 try
                 {
-                    Product product = new Product();
-                    product.Name = newProduct.Name ?? string.Empty;
-                    product.Price = Decimal.Parse(newProduct.Price);
-                    product.Rating = newProduct.Rating > 5 ? 5 : newProduct.Rating;
-                    product.UnitStock = newProduct.UnitStock;
-                    product.Create_at = DateTime.Now;
-                    Guid CateId =  Guid.Parse(newProduct.Category);
-                    product.CategoryID = CateId;
-                    product.Description = newProduct.Description ?? string.Empty;
-                    product.Image = UploadFile(newProduct.Image) ?? "";
+                    if (string.IsNullOrEmpty(newProduct.Category))
+                    {
+                        if (newProduct.Categories == null) 
+                        {
 
-                    _unitOfwork.ProductResponsitory.Insert(product);
-                    _unitOfwork.Save();
-                    
-                    return RedirectToAction("Index");
+                            ModelState.AddModelError("", "Please select a category suitable for product");
+                            newProduct.Categories = DropDownListCategoryData();
+                            return View("Create", newProduct);
+                        }    
+                    }
+                    var result = _productService.CreateProduct(newProduct);
+                    if (!result.Errored)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", result.ErrorMessage);
+                        return View("Create", newProduct);
+                    }
                 }
                 catch(Exception ex)
                 {
@@ -72,21 +79,27 @@ namespace EcommerceWEB.Controllers
             }
             else
             {
-                return View("Error", new ErrorViewModel("Params are invalid"));
+                foreach (var modelState in ViewData.ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        ModelState.AddModelError("", error.ErrorMessage);
+                    }
+                }
+                if(newProduct.Categories == null) newProduct.Categories = DropDownListCategoryData();
+                return View("Create", newProduct);
             }
         }
-
 
         [HttpGet]
         public IActionResult Update(string Id)
         {
             if (Id == null) 
-                return View("Error", new ErrorViewModel("Id can not null"));
+                return View("Error", new ErrorViewModel("Id can not be null"));
 
-            var productId = Guid.Parse(Id);
-            var productToUpdate = _unitOfwork.ProductResponsitory.GetByID(productId);
+            var productToUpdate = _productService.GetById(Id);
 
-            if(productToUpdate == null)
+            if (productToUpdate == null)
                 return View("Error", new ErrorViewModel("Product is not existed in Database"));
 
             var productToView = _mapper.Map<ProductUpdateViewModel>(productToUpdate);
@@ -101,30 +114,13 @@ namespace EcommerceWEB.Controllers
             {
                 try
                 {
-                    var Id = Guid.Parse(model.Id);
-                    var productToUpdate = _unitOfwork.ProductResponsitory.GetByID(Id);
-                    
-                    if (productToUpdate == null) return View("Error", new ErrorViewModel("User is not exists"));
-                    
-                    productToUpdate.Name = model.Name;
-                    productToUpdate.UnitStock = model.UnitStock;
-                    productToUpdate.Price = Decimal.Parse(model.Price);
-                    productToUpdate.Rating = model.Rating > 5 ? 5 : model.Rating;
-                    productToUpdate.Description = model.Description;
-                    productToUpdate.CategoryID = Guid.Parse(model.CategoryID);
-                    productToUpdate.Modify_at = DateTime.Now;
-                    string temp = productToUpdate.Image;
-                    if (model.File != null)
+                    var result =_productService.Update(model);
+                    if (result.Errored)
                     {
-                        productToUpdate.Image = UploadFile(model.File);
-                        if (!string.IsNullOrEmpty(temp))
-                        {
-                            DeleteFile(temp);
-                        }
+                        ModelState.AddModelError("", result.ErrorMessage);
+                        return View("Create", model);
                     }
 
-                    _unitOfwork.ProductResponsitory.Update(productToUpdate);
-                    _unitOfwork.Save();
                     return RedirectToAction("Index");
                 }
                 catch(Exception ex)
@@ -143,8 +139,7 @@ namespace EcommerceWEB.Controllers
         {
             if (!string.IsNullOrEmpty(Id))
             {
-                Guid id = Guid.Parse(Id);
-                var productDetail = _unitOfwork.ProductResponsitory.GetByID(id);
+                var productDetail = _productService.GetById(Id);
                 if(productDetail == null)
                     return View("Error", new ErrorViewModel("Product is not found"));
 
@@ -162,15 +157,11 @@ namespace EcommerceWEB.Controllers
             try
             {
                 if (Id == null) return View("Error", new ErrorViewModel("Id can not be null"));
-                var convertId = Guid.Parse(Id);
-                var productToDelete = _unitOfwork.ProductResponsitory.GetByID(convertId);
-                if (productToDelete == null)
+                var result = _productService.Delete(Id);
+                if (result.Errored)
                 {
-                    return View("Error", new ErrorViewModel("Product is not found"));
+                    return View("Error", new ErrorViewModel(result.ErrorMessage));
                 }
-
-                _unitOfwork.ProductResponsitory.Delete(productToDelete);
-                _unitOfwork.Save();
                 return RedirectToAction("Index");
             }
             catch(Exception ex)
@@ -205,48 +196,5 @@ namespace EcommerceWEB.Controllers
             
             return listCate;
         }
-
-        //
-        // Summary:
-        //    Implement upload image to folder content
-        //    Return string name image uploaded successfully
-        private string UploadFile(IFormFile image)
-       {
-            if (image == null) return null;
-            try
-            {
-                string fileName = Guid.NewGuid().ToString() + image.FileName;
-                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images\\ProductImages", fileName);
-                var extension = new[] { "image/jpg", "image/png", "image/jpeg" };
-                if (!extension.Contains(image.ContentType)) return null;
-                using (FileStream file = new FileStream(filePath, FileMode.Create))
-                {
-                    image.CopyTo(file);
-                }
-                return fileName;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-            
-       }
-
-        //
-        // Summary:
-        //  Give string name image to delete
-        private void DeleteFile(string imageName)
-        {
-            if (imageName == null) return;
-
-            string path = _hostingEnvironment.WebRootPath + "\\Images\\ProductImages\\" + imageName;
-            if (System.IO.File.Exists(path))
-            {
-                System.IO.File.Delete(path);
-            }
-
-            return;
-        }
-
     }
 }

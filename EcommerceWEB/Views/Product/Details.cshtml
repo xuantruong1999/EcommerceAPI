@@ -25,7 +25,7 @@
         <div id="content" class="col-8">
             <div class="">@Model.Name</div>
             <div class="additonal">
-                @for(var i = 1; i < Model.Rating; i++)
+                @for(var i = 1; i <= Model.Rating; i++)
                  { 
                     <span class="fa fa-star"></span>
                  }

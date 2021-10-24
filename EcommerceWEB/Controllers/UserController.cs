@@ -22,7 +22,7 @@ namespace EcommerceWEB.Controllers
     {
         protected readonly IHostingEnvironment _hostingEnvironment;
         private readonly IUsersService _userService;
-        private readonly ICommonSerivce _commonService;
+        private readonly ICommonService _commonService;
         public UserController(IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork, IHostingEnvironment hostingEnvironment) : base(userManager, signInmanager, roleManager, mapper, unitOfWork)
         {
             _hostingEnvironment = hostingEnvironment;
