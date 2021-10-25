@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EcomerceAPI.Services;
 using EcommerceAPI.DataAccess.EFModel;
 using EcommerceAPI.DataAccess.Infrastructure;
 using EcommerceAPI.Model;

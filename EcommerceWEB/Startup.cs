@@ -13,7 +13,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using EcommerceAPI.DataAccess.EFModel;
-using EcomerceAPI.Services;
 using EcommerceAPI.Services;
 
 namespace EcommerceWEB
@@ -48,6 +47,7 @@ namespace EcommerceWEB
             services.AddScoped<ICommonService, CommonService>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
             services.AddControllersWithViews();
 

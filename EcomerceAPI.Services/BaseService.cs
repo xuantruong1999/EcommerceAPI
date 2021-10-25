@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 
 
-namespace EcomerceAPI.Services
+namespace EcommerceAPI.Services
 {
     public class BaseService
     {

@@ -25,7 +25,7 @@
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
+                <div class="sidebar-brand-text mx-3">Ecommerce API</div>
             </a>
 
             <!-- Divider -->
@@ -137,6 +137,7 @@
             </div>
 
         </ul>
+
         <div role="main" id="content-wrapper" class="d-flex flex-column">
             <div id="content">
                 @await Html.PartialAsync("_TopBar.cshtml")
@@ -164,6 +165,22 @@
         <script src="~/lib/jquery/dist/jquery.min.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
+        <script>
+            $(document).ready(function () {
+                $("button#sidebarToggle, button#sidebarToggleTop").on("click", () => {
+                    var listClassName = $("ul#accordionSidebar").attr("class").split(" ");
+                    if (!listClassName.includes("toggled")) {
+                        $("ul#accordionSidebar").addClass("toggled");
+                    }
+                    else {
+                        $("ul#accordionSidebar").removeClass("toggled");
+                    }
+                })
+
+                //sidebarToggleTop
+            });
+
+        </script>
         @RenderSection("Scripts", required: false)
     </div>
 </body>

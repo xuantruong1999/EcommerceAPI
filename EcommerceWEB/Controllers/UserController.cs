@@ -11,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using EcomerceAPI.Services;
 using EcommerceAPI.Services;
 
 namespace EcommerceWEB.Controllers
@@ -23,10 +22,12 @@ namespace EcommerceWEB.Controllers
         protected readonly IHostingEnvironment _hostingEnvironment;
         private readonly IUsersService _userService;
         private readonly ICommonService _commonService;
-        public UserController(IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork, IHostingEnvironment hostingEnvironment) : base(userManager, signInmanager, roleManager, mapper, unitOfWork)
+        private readonly RoleManager<IdentityRole>  _roleManager;
+        public UserController(RoleManager<IdentityRole> roleMrg, IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork, IHostingEnvironment hostingEnvironment) : base(mapper, unitOfWork)
         {
             _hostingEnvironment = hostingEnvironment;
             _userService = userService;
+            _roleManager = roleMrg;
         }
 
         [HttpGet]

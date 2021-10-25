@@ -9,19 +9,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EcommerceAPI.Services;
 
 namespace EcommerceWEB.Controllers
 {
     [Authorize]
     public class CategoryProductController : BaseController
     {
-        public CategoryProductController(IUnitOfWork unitOfWork, IMapper mapper) : base(mapper, unitOfWork)
+        protected readonly ICategoryService _categoryService;
+
+        public CategoryProductController(ICategoryService categoryService, IUnitOfWork unitOfWork, IMapper mapper) : base(mapper, unitOfWork)
         {
+            _categoryService = categoryService;
         }
         [HttpGet]
         public IActionResult Index()
         {
-            var listCateProduct = _unitOfwork.CategoryProductResponsitory.GetAll();
+            var listCateProduct = _categoryService.GetAll();
             var listCateToView = from cate in listCateProduct
                                  select new CategoryProductViewModel()
                                  {
@@ -47,9 +51,15 @@ namespace EcommerceWEB.Controllers
                 try
                 {
                     var newCategory = _mapper.Map<CategoryProduct>(model);
-                    _unitOfwork.CategoryProductResponsitory.Insert(newCategory);
-                    _unitOfwork.Save();
-                    return RedirectToAction("Index");
+                    var result = _categoryService.Create(newCategory);
+                    if (!result.Errored)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        return View("Create", model);
+                    }
                 }
                 catch(Exception ex)
                 {
@@ -70,8 +80,12 @@ namespace EcommerceWEB.Controllers
                 return View("Error", new ErrorViewModel("Id can not null"));
             try
             {
-                var id = Guid.Parse(Id);
-                var cate = _unitOfwork.CategoryProductResponsitory.GetByID(id);
+                var cate = _categoryService.GetCategoryById(Id);
+
+                if(cate == null)
+                {
+                    return View("Error", new ErrorViewModel("Category is not exist"));
+                }
 
                 var cateToView = _mapper.Map<CategoryProductViewModel>(cate);
 
@@ -90,28 +104,18 @@ namespace EcommerceWEB.Controllers
             {
                 try
                 {
-                    var cateId = Guid.Parse(category.Id);
-                    var cateToUpdate = _unitOfwork.CategoryProductResponsitory.GetByID(cateId);
-                    if (cateToUpdate != null)
+                    Result result = _categoryService.Update(category);
+                    if (result.Errored)
                     {
-                        cateToUpdate.Name = string.IsNullOrEmpty(category.Name) ? null : category.Name;
-                        cateToUpdate.Description = string.IsNullOrEmpty(category.Description) ? null : category.Description;
-                        cateToUpdate.Modify_at = DateTime.Now;
+                        return View("Error", new ErrorViewModel(result.ErrorMessage));
+                    }
 
-                        _unitOfwork.CategoryProductResponsitory.Update(cateToUpdate);
-                        _unitOfwork.Save();
-                        return RedirectToAction("Update", cateToUpdate.Id);
-                    }
-                    else
-                    {
-                        return View("Error", new ErrorViewModel("User is not existed. Maybe this user had been deleted in database"));
-                    }
+                    return RedirectToAction("Update", new { Id = category.Id });
                 }
                 catch(Exception ex)
                 {
                     throw ex;
                 }
-                
             }
             else
             {
@@ -119,6 +123,7 @@ namespace EcommerceWEB.Controllers
                 return View();
             }
         }
+
         [HttpGet]
         public IActionResult Delete(string Id)
         {
@@ -126,15 +131,11 @@ namespace EcommerceWEB.Controllers
             {
                 if (Id == null)
                     return View("Error", new ErrorViewModel("Id can not null"));
-
-                var guidId = Guid.Parse(Id);
-                var cateToDelete = _unitOfwork.CategoryProductResponsitory.GetByID(guidId);
-                if (cateToDelete == null)
-                    return View("Error", new ErrorViewModel("User is not existed. Maybe this user had been deleted in database"));
-
-                _unitOfwork.CategoryProductResponsitory.Delete(cateToDelete);
-                _unitOfwork.Save();
-
+                var result = _categoryService.Delete(Id);
+                if (result.Errored)
+                {
+                    return View("Error", new ErrorViewModel(result.ErrorMessage));
+                }
                 return RedirectToAction("Index");
             }
             catch(Exception ex)
