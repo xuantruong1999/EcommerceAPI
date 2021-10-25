@@ -14,6 +14,8 @@ using EcommerceAPI.DataAccess.EFModel;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using EcommerceAPI.Services;
+using Microsoft.EntityFrameworkCore;
+using EcommerceAPI.Model.Common;
 
 namespace EcommerceWEB.Controllers
 {
@@ -30,10 +32,11 @@ namespace EcommerceWEB.Controllers
         }
 
         [HttpGet]
-        public ActionResult Index()
+        public ActionResult Index(int? pageNumber)
         {
-            var allProduct = _productService.GetAll().Select(p => _mapper.Map<ProductViewModel>(p)).ToList();
-            return View(allProduct);
+            int pageSize = 5;
+            var allProduct = _productService.GetAll().Select(p => _mapper.Map<ProductViewModel>(p)).AsQueryable();
+            return View(PaginatedList<ProductViewModel>.Create(allProduct.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         [HttpGet]
