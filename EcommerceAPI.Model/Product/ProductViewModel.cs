@@ -21,6 +21,7 @@ namespace EcommerceAPI.Model.Product
 
     public class ProductNewViewModel
     {
+        [Required]
         public string Name { get; set; }
         public IFormFile? Image { get; set; }
         public int UnitStock { get; set; }

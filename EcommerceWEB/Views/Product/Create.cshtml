@@ -9,7 +9,7 @@
 
 <hr />
     <form asp-action="OnPostNewProduct" asp-controller="Product" enctype="multipart/form-data">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="ModelOnly" class="alert text-danger" role="alert"></div>
         <div class="row">
             <div class="col col-4">
                 <input class="form-control-file" type="file" name="Image"/>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="form-group">
                     <select id="category" class="form-select" aria-label="Default select example" name="category" asp-items="@Model.Categories">
-                        <option>Select Category</option>
+                        <option value="">Select Category</option>
                     </select>
                     <span asp-validation-for="Categories" class="text-danger"></span>
                 </div>
