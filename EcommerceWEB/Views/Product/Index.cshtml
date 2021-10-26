@@ -70,13 +70,41 @@
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 
-<a asp-action="Index"
-   asp-route-pageNumber="@(Model.PageIndex - 1)"
-   class="btn btn-default @prevDisabled">
-    Previous
-</a>
-<a asp-action="Index"
-   asp-route-pageNumber="@(Model.PageIndex + 1)"
-   class="btn btn-default @nextDisabled">
-    Next
-</a>
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item">
+            <a asp-action="Index" class="page-link btn btn-default @prevDisabled" aria-label="Previous" asp-route-pageNumber="@(Model.PageIndex - 1)">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Previous</span>
+            </a>
+        </li>
+        @for (int index = 1; index <= Model.TotalPages; index++)
+        {
+            if (index == Model.PageIndex)
+            {
+                <li class="page-item active">
+                    <a asp-action="Index" class="page-link" asp-route-pageNumber="@index">
+                        @index
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a asp-action="Index" class="page-link" asp-route-pageNumber="@index">
+                        @index
+                    </a>
+                </li>
+            }
+        }
+    <li class="page-item">
+        @{
+            var pageNumbr = Model.PageIndex < Model.TotalPages ? Model.PageIndex + 1 : Model.TotalPages;
+         }
+            <a class="page-link @nextDisabled" aria-label="Next" asp-action="Index" asp-route-pageNumber="@(pageNumbr)">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+            </a>
+        </li>
+    </ul>
+</nav>

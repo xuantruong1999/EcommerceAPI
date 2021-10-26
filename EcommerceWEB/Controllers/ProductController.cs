@@ -58,7 +58,6 @@ namespace EcommerceWEB.Controllers
                     {
                         if (newProduct.Categories == null) 
                         {
-
                             ModelState.AddModelError("", "Please select a category suitable for product");
                             newProduct.Categories = DropDownListCategoryData();
                             return View("Create", newProduct);
