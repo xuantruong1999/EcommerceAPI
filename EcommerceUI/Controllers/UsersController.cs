@@ -55,7 +55,7 @@ namespace EcommerceWEB.Controllers
                     string token = _tokenService.GenerateTokenJWT(userDb.Id);
                     string refreshToken = _tokenService.GenerateRefreshToken();
                     userDb.RefreshToken = refreshToken;
-                    userDb.RefreshTokenTimeStamp = System.DateTime.Now.AddDays(7);
+                    userDb.RefreshTokenTimeStamp = System.DateTime.Now.AddMinutes(2);
                     _unitOfWork.UserResponsitory.Update(userDb);
                     _unitOfWork.Save();
                     return Ok(new { user, token, refreshToken });

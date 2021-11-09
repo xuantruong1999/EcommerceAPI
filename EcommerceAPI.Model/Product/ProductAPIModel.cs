@@ -18,5 +18,6 @@ namespace EcommerceAPI.Model.Product
         public string CategoryName {get; set;}
         [Required]
         public Guid CategoryID { get; set; }
+        public DateTime? CreateDate { get; set; }
     }
 }

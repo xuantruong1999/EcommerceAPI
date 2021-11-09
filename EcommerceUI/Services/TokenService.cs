@@ -71,7 +71,7 @@ namespace EcommerceAPI.UI.Services
                     new System.Security.Claims.Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                 }),
 
-                Expires = DateTime.UtcNow.AddHours(12),
+                Expires = DateTime.UtcNow.AddMinutes(2),
                 Issuer = _config["JWT:ValidIssuer"],
                 Audience = _config["JWT:ValidAudience"],
                 SigningCredentials = new SigningCredentials(encodeSecret, SecurityAlgorithms.HmacSha256Signature)

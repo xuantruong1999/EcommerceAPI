@@ -47,7 +47,8 @@ namespace EcommerceWEB.Controllers
                                Description = p.Description,
                                Price = p.Price,
                                CategoryName = p.CategoryProduct.Name,
-                               CategoryID = p.CategoryID
+                               CategoryID = p.CategoryID,
+                               CreateDate = p.Create_at,
                            };
 
             return Ok(products);
