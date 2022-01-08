@@ -20,11 +20,11 @@ using EcommerceAPI.Services;
 namespace EcommerceWEB.Controllers
 {
     [Authorize("Admin")]
-    public class ProfileController : BaseController
+    public class ProfilesController : BaseController
     {
         private readonly IProfileService _profileService;
         protected readonly IHostingEnvironment _hostingEnviroment;
-        public ProfileController(IMapper mapper, IHostingEnvironment hostingEnviroment, IProfileService profileService) : base(mapper) 
+        public ProfilesController(IMapper mapper, IHostingEnvironment hostingEnviroment, IProfileService profileService) : base(mapper) 
         {
             _profileService = profileService;
             _hostingEnviroment = hostingEnviroment;

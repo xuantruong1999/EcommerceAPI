@@ -17,13 +17,13 @@ namespace EcommerceWEB.Controllers
 {
     [Authorize]
     [Route("{controller}/{action=index}")]
-    public class UserController : BaseController
+    public class UsersController : BaseController
     {
         protected readonly IHostingEnvironment _hostingEnvironment;
         private readonly IUsersService _userService;
         private readonly ICommonService _commonService;
         private readonly RoleManager<IdentityRole>  _roleManager;
-        public UserController(RoleManager<IdentityRole> roleMrg, IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork, IHostingEnvironment hostingEnvironment) : base(mapper, unitOfWork)
+        public UsersController(RoleManager<IdentityRole> roleMrg, IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork, IHostingEnvironment hostingEnvironment) : base(mapper, unitOfWork)
         {
             _hostingEnvironment = hostingEnvironment;
             _userService = userService;

@@ -9,9 +9,6 @@
     <link href="~/css/Product/details.css" rel="stylesheet" />
 }
 
-@{
-    var folderPath = "../../Images/ProductImages/" + @Model.Image;
-}
 
 <h1>Detail</h1>
 
@@ -19,7 +16,7 @@
     <div class="row">
         <div id="image" class="col-4">
             <div>
-                <img class="img-fluid" src="@folderPath" />
+                <img class="img-fluid" src="@Model.Image" />
             </div>
         </div>
         <div id="content" class="col-8">

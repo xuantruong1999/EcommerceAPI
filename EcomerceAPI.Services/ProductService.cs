@@ -9,15 +9,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EcommerceAPI.Services
 {
     public interface IProductService
     {
         IList<Product> GetAll();
-        Result CreateProduct(ProductNewViewModel newProduct);
+        Task<Result> CreateProduct(ProductNewViewModel newProduct);
         Product GetById(object id);
-        Result Update(ProductUpdateViewModel model);
+        Task<Result> Update(ProductUpdateViewModel model);
         Result Delete(string id);
 
     }
@@ -25,11 +26,13 @@ namespace EcommerceAPI.Services
     {
         protected readonly ICommonService _commonService;
         protected readonly IHostingEnvironment _hostingEnviroment;
-
-        public ProductService(IHostingEnvironment hostingEnvironment, ICommonService commonService,IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper) : base(unitOfWork, userManager, mapper)
+        protected readonly IBlobStorageAccountService _blobStorage;
+        public ProductService(IHostingEnvironment hostingEnvironment, ICommonService commonService,IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper, IBlobStorageAccountService blobStorage) 
+            : base(unitOfWork, userManager, mapper)
         {
             _commonService = commonService;
             _hostingEnviroment = hostingEnvironment;
+            _blobStorage = blobStorage;
         }
 
         public IList<Product> GetAll()
@@ -38,7 +41,7 @@ namespace EcommerceAPI.Services
             return listProduct.ToList();
         }
 
-        public Result CreateProduct(ProductNewViewModel newProduct)
+        public async Task<Result> CreateProduct(ProductNewViewModel newProduct)
         {
             if(newProduct == null)
             {
@@ -55,7 +58,7 @@ namespace EcommerceAPI.Services
             Guid CateId = Guid.Parse(newProduct.Category);
             product.CategoryID = CateId;
             product.Description = newProduct.Description ?? string.Empty;
-            product.Image = _commonService.UploadFile(newProduct.Image) ?? "";
+            product.Image = await _blobStorage.UploadFileToBlob(newProduct.Image) ?? "";
 
             _unitOfwork.ProductResponsitory.Insert(product);
             _unitOfwork.Save();
@@ -75,14 +78,14 @@ namespace EcommerceAPI.Services
             return productToUpdate;
         }
 
-        public Result Update(ProductUpdateViewModel model)
+        public async Task<Result> Update(ProductUpdateViewModel model)
         {
             //var Id = Guid.Parse(model.Id);
             var productToUpdate = GetById(model.Id);
 
             if (productToUpdate == null)
             {
-                Result error = "User is not exists";
+                Result error = "This product is not exist";
                 return error;
             }
 
@@ -94,12 +97,14 @@ namespace EcommerceAPI.Services
             productToUpdate.CategoryID = Guid.Parse(model.CategoryID);
             productToUpdate.Modify_at = DateTime.Now;
             string temp = productToUpdate.Image;
+
             if (model.File != null)
             {
-                productToUpdate.Image = _commonService.UploadFile(model.File);
+                byte[]fileData = new byte[model.File.Length];
+                productToUpdate.Image =  await _blobStorage.UploadFileToBlob(model.File);
                 if (!string.IsNullOrEmpty(temp))
                 {
-                   DeleteFile(temp);
+                    _blobStorage.DeleteBlobData(temp);
                 }
             }
 
@@ -122,21 +127,15 @@ namespace EcommerceAPI.Services
                 Result error = "Product is not exist";
                 return error;
             }
+
+            //delete image in azure storage account blob
+            _blobStorage.DeleteBlobData(product.Image);
+
             _unitOfwork.ProductResponsitory.Delete(product);
             _unitOfwork.Save();
+
             return Result.WithOutErrored;
         }
-        private void DeleteFile(string imageName)
-        {
-            if (imageName == null) return;
-
-            string path = _hostingEnviroment.WebRootPath + "\\Images\\ProductImages\\" + imageName;
-            if (System.IO.File.Exists(path))
-            {
-                System.IO.File.Delete(path);
-            }
-
-            return;
-        }
+       
     }
 }

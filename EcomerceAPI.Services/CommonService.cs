@@ -32,7 +32,7 @@ namespace EcommerceAPI.Services
         public void DeleteImageExistes(string fileName)
         {
             if (string.IsNullOrEmpty(fileName)) return;
-            string pathFileToDelete = Path.Combine(_hostingEnvironment.WebRootPath, "Images\\UserImages", fileName);
+            string pathFileToDelete = Path.Combine(_hostingEnvironment.WebRootPath, "Images", "UserImages", fileName);
 
             if (System.IO.File.Exists(pathFileToDelete))
             {
@@ -51,18 +51,46 @@ namespace EcommerceAPI.Services
             try
             {
                 string fileName = Guid.NewGuid().ToString() + image.FileName;
-                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images\\ProductImages", fileName);
+                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images", "ProductImages", fileName);
                 var extension = new[] { "image/jpg", "image/png", "image/jpeg" };
                 if (!extension.Contains(image.ContentType)) return null;
-                using (FileStream file = new FileStream(filePath, FileMode.Create))
+                using (FileStream file = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
                     image.CopyTo(file);
                 }
                 return fileName;
             }
-            catch (Exception ex)
+            catch (FileNotFoundException ex)
             {
-                return null;
+                throw ex;
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                throw ex;
+            }
+            catch (DriveNotFoundException ex)
+            {
+                throw ex;
+            }
+            catch (PathTooLongException ex)
+            {
+                throw ex;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw ex;
+            }
+            catch (IOException e) when ((e.HResult & 0x0000FFFF) == 32)
+            {
+                throw e;
+            }
+            catch (IOException e) when ((e.HResult & 0x0000FFFF) == 80)
+            {
+                throw e;
+            }
+            catch (IOException e)
+            {
+                throw e;
             }
         }
     }

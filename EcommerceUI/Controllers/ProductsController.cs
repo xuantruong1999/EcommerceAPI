@@ -57,6 +57,7 @@ namespace EcommerceWEB.Controllers
         [Route("Details")]
         public IActionResult Details([FromQuery] string id)
         {
+            const string HOSTWEB = "http://127.0.0.1:5000/images/productimages/";
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
 
@@ -65,8 +66,7 @@ namespace EcommerceWEB.Controllers
 
             if (product != null)
             {
-                //var urlImg = _httpContext.HttpContext.Request.Scheme + $"://" + _httpContext.HttpContext.Request.Host.Value + $"/Images/ProductImages/";
-                var urlImg = $"http://127.0.0.1:5000/images/productimages/";
+                var urlImg = HOSTWEB;
                 var category = _unitOfWork.CategoryProductResponsitory.GetByID(product.CategoryID);
                 var productToView = new ProductAPIModel()
                 {

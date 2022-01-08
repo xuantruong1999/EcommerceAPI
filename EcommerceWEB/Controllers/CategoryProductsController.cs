@@ -14,11 +14,11 @@ using EcommerceAPI.Services;
 namespace EcommerceWEB.Controllers
 {
     [Authorize]
-    public class CategoryProductController : BaseController
+    public class CategoryProductsController : BaseController
     {
         protected readonly ICategoryService _categoryService;
 
-        public CategoryProductController(ICategoryService categoryService, IUnitOfWork unitOfWork, IMapper mapper) : base(mapper, unitOfWork)
+        public CategoryProductsController(ICategoryService categoryService, IUnitOfWork unitOfWork, IMapper mapper) : base(mapper, unitOfWork)
         {
             _categoryService = categoryService;
         }

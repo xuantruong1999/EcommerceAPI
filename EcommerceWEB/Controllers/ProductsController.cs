@@ -21,11 +21,12 @@ namespace EcommerceWEB.Controllers
 {
     [Authorize(Roles = "Admin")]
     [Route("{controller}/{action=index}")]
-    public class ProductController : BaseController
+    public class ProductsController : BaseController
     {
         protected readonly IHostingEnvironment _hostingEnvironment;
         protected readonly IProductService _productService;
-        public ProductController(IProductService productService, IUnitOfWork unitOfWork, IMapper mapper, IHostingEnvironment hostingEnvironment) : base(mapper, unitOfWork)
+        public ProductsController(IProductService productService, IUnitOfWork unitOfWork, IMapper mapper, IHostingEnvironment hostingEnvironment)
+            : base(mapper, unitOfWork)
         {
             _hostingEnvironment = hostingEnvironment;
             _productService = productService;
@@ -48,7 +49,7 @@ namespace EcommerceWEB.Controllers
         }
 
         [HttpPost]
-        public IActionResult OnPostNewProduct(ProductNewViewModel newProduct)
+        public async Task<IActionResult> OnPostNewProduct(ProductNewViewModel newProduct)
         {
             if (ModelState.IsValid)
             {
@@ -63,7 +64,7 @@ namespace EcommerceWEB.Controllers
                             return View("Create", newProduct);
                         }    
                     }
-                    var result = _productService.CreateProduct(newProduct);
+                    var result = await _productService.CreateProduct(newProduct);
                     if (!result.Errored)
                     {
                         return RedirectToAction("Index");
@@ -110,13 +111,13 @@ namespace EcommerceWEB.Controllers
         }
 
         [HttpPost]
-        public IActionResult OnPostUpdate(ProductUpdateViewModel model)
+        public async Task<IActionResult> OnPostUpdate(ProductUpdateViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var result =_productService.Update(model);
+                    var result = await _productService.Update(model);
                     if (result.Errored)
                     {
                         ModelState.AddModelError("", result.ErrorMessage);
@@ -146,6 +147,7 @@ namespace EcommerceWEB.Controllers
                     return View("Error", new ErrorViewModel("Product is not found"));
 
                 var productToView = _mapper.Map<ProductDetailViewModel>(productDetail);
+                productToView.Image = productToView.Image;
                 return View(productToView);
             }
             else
