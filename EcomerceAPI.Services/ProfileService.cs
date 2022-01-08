@@ -20,9 +20,11 @@ namespace EcommerceAPI.Services
     public class ProfileService : BaseService, IProfileService
     {
         protected readonly IHostingEnvironment _hostingEnvironment;
-        public ProfileService(IHostingEnvironment hostingEnvironment, IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper) : base(unitOfWork, userManager, mapper)
+        protected readonly IBlobStorageAccountService _blobStorageService;
+        public ProfileService(IBlobStorageAccountService blobStorage, IHostingEnvironment hostingEnvironment, IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper) : base(unitOfWork, userManager, mapper)
         {
             _hostingEnvironment = hostingEnvironment;
+            _blobStorageService = blobStorage;
         }
 
         /// <summary>
@@ -103,7 +105,7 @@ namespace EcommerceAPI.Services
                     if (!string.IsNullOrEmpty(profile.Avatar) && !string.IsNullOrEmpty(oldImage) && profile.Avatar != oldImage
                             && oldImage != "profile-icon.png")
                     {
-                        DeleteImageExisted(oldImage);
+                        _blobStorageService.DeleteBlobData(oldImage);
                     }
 
                     return true;

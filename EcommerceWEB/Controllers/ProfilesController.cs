@@ -24,10 +24,12 @@ namespace EcommerceWEB.Controllers
     {
         private readonly IProfileService _profileService;
         protected readonly IHostingEnvironment _hostingEnviroment;
-        public ProfilesController(IMapper mapper, IHostingEnvironment hostingEnviroment, IProfileService profileService) : base(mapper) 
+        protected readonly IBlobStorageAccountService _blobStorageService;
+        public ProfilesController(IBlobStorageAccountService blobStorage, IMapper mapper, IHostingEnvironment hostingEnviroment, IProfileService profileService) : base(mapper) 
         {
             _profileService = profileService;
             _hostingEnviroment = hostingEnviroment;
+            _blobStorageService = blobStorage;
         }
         
         [HttpGet]
@@ -54,7 +56,7 @@ namespace EcommerceWEB.Controllers
         }
         
         [HttpPost]
-        public  ActionResult UpdateProfile(ProfileViewModel profile, IFormFile? formFile)
+        public async Task<ActionResult> UpdateProfile(ProfileViewModel profile, IFormFile? formFile)
         {
             if(ModelState.IsValid)
             {
@@ -62,14 +64,7 @@ namespace EcommerceWEB.Controllers
                 {
                     if (formFile != null)
                     {
-                        string uploadFolder = Path.Combine(_hostingEnviroment.WebRootPath, "Images\\UserImages");
-                        string uniqueFilename = Guid.NewGuid().ToString() + "_" + formFile.FileName;
-                        string filePath = Path.Combine(uploadFolder, uniqueFilename);
-                        using (FileStream avar = new FileStream(filePath, FileMode.Create))
-                        {
-                            formFile.CopyTo(avar);
-                        }
-                            
+                        string uniqueFilename = await _blobStorageService.UploadFileToBlob(formFile, true);
                         profile.Avatar = uniqueFilename;
                     }
 

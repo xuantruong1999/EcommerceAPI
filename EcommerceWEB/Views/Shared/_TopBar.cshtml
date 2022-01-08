@@ -3,17 +3,17 @@
 @{
     var currentUser = unitOfWork.UserResponsitory.Find(u => u.UserName.Equals(User.Identity.Name)).FirstOrDefault();
     var avatar = unitOfWork.ProfileResponsitory.Find(p => p.UserID.Equals(currentUser.Id)).FirstOrDefault()?.Avatar;
-    string[] model = new string[2];
+    //string[] model = new string[2];
 
-    model[0] = (currentUser.UserName);
-    model[1] = string.Format("profile-icon.png");
+    //model[0] = (currentUser.UserName);
+    //model[1] = string.Format("profile-icon.png");
 
-    if (!string.IsNullOrEmpty(avatar))
-    {
-        model[1] = avatar;
-    }
-    string name = model[0];
-    string fullPath = "/Images/UserImages/" + model[1];
+    //if (!string.IsNullOrEmpty(avatar))
+    //{
+    //    model[1] = avatar;
+    //}
+    string name = currentUser.UserName;
+    string fullPath = avatar;
 }
 
 
@@ -160,7 +160,7 @@
             </a>
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" asp-action="ViewProfile" asp-controller="Profile">
+                <a class="dropdown-item" asp-action="ViewProfile" asp-controller="Profiles">
                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                     Profile
                 </a>

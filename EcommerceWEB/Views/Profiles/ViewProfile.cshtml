@@ -4,11 +4,7 @@
     <link href="/css/User/createProfile.css" rel="stylesheet" />
 }
 
-@{ 
-    string rootPath = "../../Images/UserImages/";
-    string fileName = Model.Avatar ?? "profile-icon.png";
-    string fullPath = rootPath + fileName;
-}
+
 <div class="container">
     <form asp-action="UpdateProfile" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger mx-auto"></div>
@@ -27,7 +23,7 @@
                     else
                     {
                         <div class="avatar-block text-center p-1 border">
-                            <img src="@fullPath" class="img-fluid" alt="Alternate Text" />
+                            <img src="@Model.Avatar" class="img-fluid" alt="Alternate Text" />
                         </div>
                         <div class="mt-2">
                             <input type="file" class="form-control-file" accept="image/png, image/jpg" name="formFile" value="" />

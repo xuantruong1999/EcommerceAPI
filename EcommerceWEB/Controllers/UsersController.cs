@@ -19,15 +19,14 @@ namespace EcommerceWEB.Controllers
     [Route("{controller}/{action=index}")]
     public class UsersController : BaseController
     {
-        protected readonly IHostingEnvironment _hostingEnvironment;
         private readonly IUsersService _userService;
-        private readonly ICommonService _commonService;
         private readonly RoleManager<IdentityRole>  _roleManager;
-        public UsersController(RoleManager<IdentityRole> roleMrg, IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork, IHostingEnvironment hostingEnvironment) : base(mapper, unitOfWork)
+        private readonly IBlobStorageAccountService _blobStorageService;
+        public UsersController(IBlobStorageAccountService blobStorage,RoleManager<IdentityRole> roleMrg, IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork) : base(mapper, unitOfWork)
         {
-            _hostingEnvironment = hostingEnvironment;
             _userService = userService;
             _roleManager = roleMrg;
+            _blobStorageService = blobStorage;
         }
 
         [HttpGet]
@@ -224,7 +223,7 @@ namespace EcommerceWEB.Controllers
                 if (!result.Errored)
                 {
                     if (avatar != null && avatar != "profile-icon.png")
-                        _commonService.DeleteImageExistes(avatar);
+                        _blobStorageService.DeleteBlobData(avatar);
                     return RedirectToAction("Index");
                 }
                 else

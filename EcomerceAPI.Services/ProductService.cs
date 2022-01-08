@@ -58,7 +58,7 @@ namespace EcommerceAPI.Services
             Guid CateId = Guid.Parse(newProduct.Category);
             product.CategoryID = CateId;
             product.Description = newProduct.Description ?? string.Empty;
-            product.Image = await _blobStorage.UploadFileToBlob(newProduct.Image) ?? "";
+            product.Image = await _blobStorage.UploadFileToBlob(newProduct.Image, false) ?? "";
 
             _unitOfwork.ProductResponsitory.Insert(product);
             _unitOfwork.Save();
@@ -101,7 +101,7 @@ namespace EcommerceAPI.Services
             if (model.File != null)
             {
                 byte[]fileData = new byte[model.File.Length];
-                productToUpdate.Image =  await _blobStorage.UploadFileToBlob(model.File);
+                productToUpdate.Image =  await _blobStorage.UploadFileToBlob(model.File, isUserFile: false);
                 if (!string.IsNullOrEmpty(temp))
                 {
                     _blobStorage.DeleteBlobData(temp);

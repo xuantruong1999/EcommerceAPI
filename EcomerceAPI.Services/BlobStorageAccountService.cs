@@ -12,7 +12,7 @@ namespace EcommerceAPI.Services
 {
     public interface IBlobStorageAccountService
     {
-        Task<string> UploadFileToBlob(IFormFile file);
+        Task<string> UploadFileToBlob(IFormFile file, bool isUserFile);
         void DeleteBlobData(string fileUrl);
     }
     public class BlobStorageAccountService : IBlobStorageAccountService
@@ -29,11 +29,16 @@ namespace EcommerceAPI.Services
             _connectStringStorage = _configuration.GetSection("ConnectionStringBlobStorage:ConnectionString").Value;
         }
 
-        public async Task<string> UploadFileToBlob(IFormFile file)
+        public async Task<string> UploadFileToBlob(IFormFile file, bool isUserFile)
         {
             try
             {
-                string fileName = GenerateProductImageFileName(file.FileName);
+                string fileName;
+                if (isUserFile)
+                    fileName = GenerateUserImageFileName(file.FileName);
+                else
+                    fileName = GenerateProductImageFileName(file.FileName);
+
                 // Create a URI to the blob
                 Uri blobUri = new Uri("https://" +
                                       _accountName +
@@ -65,6 +70,7 @@ namespace EcommerceAPI.Services
         }
 
         private string GenerateProductImageFileName(string strFileName) => "products/" + Guid.NewGuid().ToString() + strFileName;
+        private string GenerateUserImageFileName(string strFileName) => "users/" + Guid.NewGuid().ToString() + strFileName;
         
     }
 }
