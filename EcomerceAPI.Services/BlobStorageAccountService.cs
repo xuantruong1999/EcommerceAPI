@@ -62,7 +62,7 @@ namespace EcommerceAPI.Services
 
         public async void DeleteBlobData(string fileUrl)
         {
-            Uri uriObj = new Uri(fileUrl);
+            Uri uriObj = Uri.Parse(fileUrl);
             var parseblobName = uriObj.AbsolutePath.Split("/");
             var blobName = parseblobName[2] + "/" + parseblobName[3];
             BlobClient blobClient = new BlobClient(_connectStringStorage, _container, blobName);
