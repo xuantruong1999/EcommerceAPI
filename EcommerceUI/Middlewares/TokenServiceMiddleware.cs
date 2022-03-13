@@ -17,7 +17,7 @@ namespace EcommerceAPI.UI.Services
         }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            if (await _tokenService.IsCurrentActiveToken())
+            if ( _tokenService.IsCurrentActiveToken())
             {
                 await next(context);
                 return;

@@ -101,10 +101,10 @@ namespace EcommerceWEB.Controllers
         [HttpGet]
         [Route("logout")]
         [Authorize]
-        public async Task<IActionResult> Logout()
+        public  IActionResult Logout()
         {
             //Cancelling jwt token
-            await _tokenService.DeactivateCurrentAsync();
+            _tokenService.DeactivateCurrentAsync();
             if(!RevokeRefreshToken()) return Forbid();
             return NoContent();
         }

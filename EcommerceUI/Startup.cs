@@ -41,6 +41,7 @@ namespace EcommerceUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
             services.AddCors(options =>
             {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
@@ -63,7 +64,7 @@ namespace EcommerceUI
             // Add Services that my definion
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
-
+            
             //Controller router config response format
             services.AddControllers()
             .AddJsonOptions(options =>
@@ -96,10 +97,10 @@ namespace EcommerceUI
             
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = Configuration.GetSection("Redis")["ConnectionString"];
-            });
+            //services.AddStackExchangeRedisCache(options =>
+            //{
+            //    options.Configuration = Configuration.GetSection("Redis")["ConnectionString"];
+            //});
             services.Add(ServiceDescriptor.Singleton<IDistributedCache, RedisCache>());
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace EcommerceAPI.UI.Services.Interface
 {
     public interface ITokenService
     {
-        Task<bool> IsCurrentActiveToken();
-        Task DeactivateCurrentAsync();
-        Task<bool> IsActiveAsync(string token);
-        Task DeactivateAsync(string token);
+        bool IsCurrentActiveToken();
+        MemoryCacheEntryOptions DeactivateCurrentAsync();
+        bool IsActiveAsync(string token);
+        MemoryCacheEntryOptions DeactivateAsync(string token);
         string GenerateTokenJWT(string userId);
         string GenerateRefreshToken();
         string GetClaimsNamedId(string token);

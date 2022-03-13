@@ -1,6 +1,7 @@
 ﻿using EcommerceAPI.UI.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -18,35 +19,35 @@ namespace EcommerceAPI.UI.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IDistributedCache _cache;
+        //private readonly IDistributedCache _memoryCache;
+        private readonly IMemoryCache _memoryCache;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _config;
-        public TokenService(IDistributedCache cache,
+        public TokenService(IMemoryCache cache,
            IHttpContextAccessor httpContextAccessor,
            IConfiguration config)
         {
-            _cache = cache;
+            _memoryCache = cache;
             _httpContextAccessor = httpContextAccessor;
             _config = config;
         }
-        public async Task<bool> IsCurrentActiveToken()
-        => await IsActiveAsync(GetCurrentAsync());
+        public bool IsCurrentActiveToken()
+        =>  IsActiveAsync(GetCurrentAsync());
 
-        public async Task DeactivateCurrentAsync()
-            => await DeactivateAsync(GetCurrentAsync());
+        public MemoryCacheEntryOptions DeactivateCurrentAsync()
+            => DeactivateAsync(GetCurrentAsync());
 
-        public async Task<bool> IsActiveAsync(string token)
+        public bool IsActiveAsync(string token)
         {
-            return  await _cache.GetStringAsync(GetKey(token)) == null;
+            _memoryCache.TryGetValue(GetKey(token), out object key);
+            return  key == null;
         }
 
-        public async Task DeactivateAsync(string token)
-            => await _cache.SetStringAsync(GetKey(token),
-                " ", new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow =
-                        TimeSpan.FromMinutes(10)
-                });
+        public MemoryCacheEntryOptions DeactivateAsync(string token)
+        {
+            var memoryOption = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+            return _memoryCache.Set(GetKey(token), memoryOption);
+        }
 
         public string GetCurrentAsync()
         {
