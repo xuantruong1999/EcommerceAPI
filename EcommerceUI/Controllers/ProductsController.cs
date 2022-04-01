@@ -33,7 +33,7 @@ namespace EcommerceWEB.Controllers
         public ActionResult Index()
         {
             //var urlImg = _httpContext.HttpContext.Request.Scheme + $"://" + _httpContext.HttpContext.Request.Host.Value + $"/Images/ProductImages/";
-            var urlImg = $"http://127.0.0.1:5000/images/productimages/";
+            var urlImg = $"https://localhost:5003/images/productimages/";
             var products = from p in _unitOfWork.ProductResponsitory.GetAll()
                            join c in _unitOfWork.CategoryProductResponsitory.GetAll()
                            on p.CategoryID equals c.Id

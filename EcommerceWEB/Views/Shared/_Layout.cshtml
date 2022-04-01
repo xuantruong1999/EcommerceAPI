@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - EcommerceWEB</title>
+    <script src="https://kit.fontawesome.com/7c0df39f6d.js" crossorigin="anonymous"></script>
     <link href="~/lib/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="~/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -138,16 +139,16 @@
 
         </ul>
 
-        <div role="main" id="content-wrapper" class="d-flex flex-column">
+        <div role="main" id="content-wrapper" class="d-flex flex-column w-100">
             <div id="content">
                 @await Html.PartialAsync("_TopBar.cshtml")
                 <!--Page content-->
-                <div class="container-fluid" style="min-height: 500px">
+                <div class="container-fluid" style="height: 80%">
                     @RenderBody()
                 </div>
                 <!--End of page content-->
                 <!-- Footer -->
-                <footer class="sticky-footer bg-white">
+                <footer class="sticky-footer bg-white text-center border" style="max-height: 70px">
                     <div class="container my-auto">
                         <div class="copyright text-center my-auto">
                             <span>Copyright &copy; Your Website 2020</span>

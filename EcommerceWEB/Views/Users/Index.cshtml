@@ -5,24 +5,26 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@section Styles{
+    <link href="~/css/User/index.css" rel="stylesheet" />
+}
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<table class="table table-bordered table-hover">
+    <thead class="thead-light">
         <tr>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.UserName)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.Email)
             </th>
-            <th>
+            <th scope="col">
                 @Html.DisplayNameFor(model => model.PhoneNumber)
             </th>
-            <th></th>
+            <th scope="col">
+               Actions
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -46,9 +48,15 @@
         }
     </tbody>
 </table>
+<div class="footer-table">
+    <p class="float-right">
+        <a asp-action="Create"><i class="fa-solid fa-square-plus"></i></a>
+    </p>
+</div>
+
 @section scripts{
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             var deleteButton = $(".deleteBtn");
             deleteButton.click(function () {
                 var check = confirm("Are You Sure!");

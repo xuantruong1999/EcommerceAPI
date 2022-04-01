@@ -1,4 +1,12 @@
-﻿form {
-    left: 50%;
-    top: 50%
+﻿
+
+.center-screen {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    min-height: 80vh;
+}
+
+form {
+    width: 50%;
 }

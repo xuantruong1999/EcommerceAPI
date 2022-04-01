@@ -1,0 +1,14 @@
+﻿.footer-table {
+    width: 100%;
+    height: 25px;
+}
+
+.footer-table p {
+    margin-bottom: 0px;
+}
+
+.footer-table p i {
+    width: 25px; 
+    height: 25px;
+    font-size: 25px
+}

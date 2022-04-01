@@ -101,7 +101,7 @@ namespace EcommerceUI
             //{
             //    options.Configuration = Configuration.GetSection("Redis")["ConnectionString"];
             //});
-            services.Add(ServiceDescriptor.Singleton<IDistributedCache, RedisCache>());
+            //services.Add(ServiceDescriptor.Singleton<IDistributedCache, RedisCache>());
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
