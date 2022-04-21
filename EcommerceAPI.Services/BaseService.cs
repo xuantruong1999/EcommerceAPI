@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EcommerceAPI.DataAccess;
 using EcommerceAPI.DataAccess.EFModel;
 using EcommerceAPI.DataAccess.Infrastructure;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +15,7 @@ namespace EcommerceAPI.Services
         protected readonly IMapper _mapper;
         protected readonly IUnitOfWork _unitOfwork;
         protected readonly UserManager<User> _userManager;
+        protected readonly EcommerceContext _dbContext;
         public BaseService(IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper)
         {
             _unitOfwork = unitOfWork;

@@ -9,7 +9,7 @@ namespace EcommerceAPI.DataAccess
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private EcommerceContext _dbContext;
+        private EcommerceContext dbContext;
         private IResponsitory<User> userResponsitory;
         private IResponsitory<Profile> profileResponsitory;
         private IResponsitory<CategoryProduct> categoryProduct;
@@ -17,28 +17,19 @@ namespace EcommerceAPI.DataAccess
         private bool disposedValue = false;
         public UnitOfWork(EcommerceContext DbContext)
         {
-            _dbContext = DbContext;
+            dbContext = DbContext;
         }
-        
-        public EcommerceContext DbContext 
-        {
-            get
-            {
-                if(_dbContext == null)
-                {
-                    _dbContext = new EcommerceContext();
-                }
-                return _dbContext;
-            }
-        }
+
         #region getter
+        EcommerceContext IUnitOfWork.dbContext => this.dbContext;
+
         public IResponsitory<User> UserResponsitory
         {
             get
             {
                 if (this.userResponsitory == null)
                 {
-                    this.userResponsitory = new Responsitory<User>(_dbContext);
+                    this.userResponsitory = new Responsitory<User>(dbContext);
                 }
                 return this.userResponsitory;
             }
@@ -50,7 +41,7 @@ namespace EcommerceAPI.DataAccess
             {
                 if (this.profileResponsitory == null)
                 {
-                    this.profileResponsitory = new Responsitory<Profile>(_dbContext);
+                    this.profileResponsitory = new Responsitory<Profile>(dbContext);
                 }
                 return this.profileResponsitory;
             }
@@ -62,7 +53,7 @@ namespace EcommerceAPI.DataAccess
             {
                 if (this.categoryProduct == null)
                 {
-                    this.categoryProduct = new Responsitory<CategoryProduct>(_dbContext);
+                    this.categoryProduct = new Responsitory<CategoryProduct>(dbContext);
                 }
                 return this.categoryProduct;
             }
@@ -74,21 +65,23 @@ namespace EcommerceAPI.DataAccess
             {
                 if (this.product == null)
                 {
-                    this.product = new Responsitory<Product>(_dbContext);
+                    this.product = new Responsitory<Product>(dbContext);
                 }
                 return this.product;
             }
         }
+
+       
         #endregion getter
 
         public void Save()
         {
             CheckIsDisposed();
-            _dbContext.SaveChanges();
+            dbContext.SaveChanges();
         }
         public void SaveAsync()
         {
-            _dbContext.SaveChangesAsync();
+            dbContext.SaveChangesAsync();
         }
 
         private void CheckIsDisposed()
@@ -106,9 +99,9 @@ namespace EcommerceAPI.DataAccess
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects)
-                    if(_dbContext != null)
+                    if(dbContext != null)
                     {
-                        _dbContext.Dispose();
+                        dbContext.Dispose();
                         
 
                     } 

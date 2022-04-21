@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+    <UserSecretsId>9443169c-a554-414c-aa0e-3bbcea80e096</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,15 +23,15 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EcomerceAPI.Services\EcommerceAPI.Services.csproj" />
     <ProjectReference Include="..\EcommerceAPI.DataAccess\EcommerceAPI.DataAccess.csproj" />
     <ProjectReference Include="..\EcommerceAPI.Model\EcommerceAPI.Model.csproj" />
-    <ProjectReference Include="..\EcommerceExtention\EcommerceExtention.csproj" />
+    <ProjectReference Include="..\EcommerceAPI.Services\EcommerceAPI.Services.csproj" />
   </ItemGroup>
 
 </Project>

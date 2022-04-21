@@ -37,7 +37,7 @@ namespace EcommerceWEB.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
             List<string> roles = new List<string>();
             roles = _roleManager.Roles.Select(x => x.Name).ToList();
@@ -231,7 +231,6 @@ namespace EcommerceWEB.Controllers
                     string message = "Can not delete user with ID: " + id;
                     return View("~/Views/Shared/Error.cshtml", result.ErrorMessage);
                 }
-               
             }
             else
             {

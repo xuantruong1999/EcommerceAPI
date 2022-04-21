@@ -7,7 +7,7 @@ namespace EcommerceAPI.DataAccess.Infrastructure
 {
     public interface IUnitOfWork : IDisposable
     {
-        EcommerceContext DbContext { get;}
+        EcommerceContext dbContext { get; }
         void Save();
         void SaveAsync();
         IResponsitory<User> UserResponsitory { get; }

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EcommerceAPI.DataAccess.Infrastructure;
-using EcommerceExtention;
 using EcommerceAPI.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
@@ -35,50 +34,58 @@ namespace EcommerceWEB.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(UserLoginViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                string emailPattern = string.Format($"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
-                bool validateEmail = Regex.IsMatch(model.UserNameOrEmail, emailPattern);
-                string returnURL = model.ReturnURL ?? Url.Content("~/user/index");
-                if (!validateEmail)
+                if (ModelState.IsValid)
                 {
-                    var result = await _signInmanager.PasswordSignInAsync(model.UserNameOrEmail, model.Password, model.RememberMe, false);
-                    if (result.Succeeded)
+                    string emailPattern = string.Format($"^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+                    bool validateEmail = Regex.IsMatch(model.UserNameOrEmail, emailPattern);
+                    string returnURL = model.ReturnURL ?? Url.Content("~/user/index");
+                    if (!validateEmail)
                     {
-                        if(Url.IsLocalUrl(returnURL))
-                            return Redirect("~/");
-                        return Redirect(Url.Content("~/"));
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", string.Format($"Login Fail with UserName: {model.UserNameOrEmail} and password"));
-                        return View(model);
-                    }
-                }
-                else
-                {
-                    var user = await _userManager.FindByEmailAsync(model.UserNameOrEmail);
-                    if (user != null)
-                    {
-                        var result = await _signInmanager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, false);
+                        var result = await _signInmanager.PasswordSignInAsync(model.UserNameOrEmail, model.Password, model.RememberMe, false);
                         if (result.Succeeded)
                         {
-                            return LocalRedirect(returnURL);
+                            if (Url.IsLocalUrl(returnURL))
+                                return Redirect("~/");
+                            return Redirect(Url.Content("~/"));
                         }
                         else
                         {
-                            ModelState.AddModelError("", string.Format($"Login Fail with email: {model.UserNameOrEmail} and password"));
+                            ModelState.AddModelError("", string.Format($"Login Fail with UserName: {model.UserNameOrEmail} and password"));
                             return View(model);
                         }
                     }
                     else
                     {
-                        ModelState.AddModelError("", string.Format($"User have not existed with email: {model.UserNameOrEmail} and password"));
-                        return View(model);
+                        var user = await _userManager.FindByEmailAsync(model.UserNameOrEmail);
+                        if (user != null)
+                        {
+                            var result = await _signInmanager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, false);
+                            if (result.Succeeded)
+                            {
+                                return LocalRedirect(returnURL);
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("", string.Format($"Login Fail with email: {model.UserNameOrEmail} and password"));
+                                return View(model);
+                            }
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", string.Format($"User have not existed with email: {model.UserNameOrEmail} and password"));
+                            return View(model);
+                        }
                     }
                 }
-            }   
-            return View(model);
+                return View(model);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            
         }
         
         [HttpGet]
@@ -132,6 +139,5 @@ namespace EcommerceWEB.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        
     }
 }

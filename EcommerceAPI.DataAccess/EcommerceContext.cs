@@ -11,19 +11,17 @@ namespace EcommerceAPI.DataAccess
     {
         public EcommerceContext()
         {
-            
         }
 
         public EcommerceContext(DbContextOptions<EcommerceContext> options) : base(options)
         {
-
         }
         
         public DbSet<User> Users { get; set; }
         public DbSet<Profile> Profile { get; set; }
         public DbSet<CategoryProduct> CategoryProducts { get; set; }
         public DbSet<Product> Products { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

@@ -23,9 +23,9 @@ namespace EcommerceWEB.Controllers
     [Route("{controller}/{action=index}")]
     public class ProductsController : BaseController
     {
-        protected readonly IHostingEnvironment _hostingEnvironment;
+        protected readonly IWebHostEnvironment _hostingEnvironment;
         protected readonly IProductService _productService;
-        public ProductsController(IProductService productService, IUnitOfWork unitOfWork, IMapper mapper, IHostingEnvironment hostingEnvironment)
+        public ProductsController(IProductService productService, IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment hostingEnvironment)
             : base(mapper, unitOfWork)
         {
             _hostingEnvironment = hostingEnvironment;

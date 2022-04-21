@@ -23,9 +23,9 @@ namespace EcommerceWEB.Controllers
     public class ProfilesController : BaseController
     {
         private readonly IProfileService _profileService;
-        protected readonly IHostingEnvironment _hostingEnviroment;
+        protected readonly IWebHostEnvironment _hostingEnviroment;
         protected readonly IBlobStorageAccountService _blobStorageService;
-        public ProfilesController(IBlobStorageAccountService blobStorage, IMapper mapper, IHostingEnvironment hostingEnviroment, IProfileService profileService) : base(mapper) 
+        public ProfilesController(IBlobStorageAccountService blobStorage, IMapper mapper, IWebHostEnvironment hostingEnviroment, IProfileService profileService) : base(mapper) 
         {
             _profileService = profileService;
             _hostingEnviroment = hostingEnviroment;

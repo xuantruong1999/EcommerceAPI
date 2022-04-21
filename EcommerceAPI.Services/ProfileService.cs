@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using EcommerceAPI.DataAccess;
 using EcommerceAPI.DataAccess.EFModel;
 using EcommerceAPI.DataAccess.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +23,7 @@ namespace EcommerceAPI.Services
     {
         protected readonly IHostingEnvironment _hostingEnvironment;
         protected readonly IBlobStorageAccountService _blobStorageService;
+        
         public ProfileService(IBlobStorageAccountService blobStorage, IHostingEnvironment hostingEnvironment, IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper) : base(unitOfWork, userManager, mapper)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -35,8 +38,8 @@ namespace EcommerceAPI.Services
         public DataAccess.EFModel.Profile GetProfileByName(string userName)
         {
             if (string.IsNullOrEmpty(userName)) return null;
-            var userExist = _unitOfwork.UserResponsitory.Find(u => u.UserName == userName).FirstOrDefault();
-
+            //var userExist = _unitOfwork.UserResponsitory.Find(u => u.UserName == userName).FirstOrDefault();
+            var userExist = _unitOfwork.dbContext.Users.Where(u => u.UserName == userName).Include(u => u.Profile).FirstOrDefault();
             if (userExist != null)
             {
                 var profileByuserID = _unitOfwork.ProfileResponsitory.Find(profile => profile.UserID == userExist.Id).FirstOrDefault();

@@ -1,0 +1,23 @@
+version: "3.4"
+services:
+  ecommerceweb:
+    container_name: ecommerceweb
+    image: ${DOCKER_REGISTRY-}ecommerceweb
+    build:
+      context: .
+      dockerfile: EcommerceWEB/Dockerfile
+    depends_on:
+      - db
+  db:
+    container_name: db
+    image: "mcr.microsoft.com/mssql/server"
+    ports:
+      - "1433:1433"
+    volumes:
+      - backup_volume:/var/opt/mssql
+    environment:
+      SA_PASSWORD: "sa_pass123456"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+volumes:
+  backup_volume:
