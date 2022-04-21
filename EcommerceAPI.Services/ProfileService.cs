@@ -42,8 +42,7 @@ namespace EcommerceAPI.Services
             var userExist = _unitOfwork.dbContext.Users.Where(u => u.UserName == userName).Include(u => u.Profile).FirstOrDefault();
             if (userExist != null)
             {
-                var profileByuserID = _unitOfwork.ProfileResponsitory.Find(profile => profile.UserID == userExist.Id).FirstOrDefault();
-                if (profileByuserID == null)
+                if (userExist.Profile == null)
                 {
                     DataAccess.EFModel.Profile profile = new DataAccess.EFModel.Profile();
                     profile.UserID = userExist.Id;
@@ -51,7 +50,7 @@ namespace EcommerceAPI.Services
                 }
                 else
                 {
-                    return profileByuserID;
+                    return userExist.Profile;
                 }
             }
             else
