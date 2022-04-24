@@ -15,11 +15,6 @@ RUN dotnet restore "EcommerceWEB/EcommerceWEB.csproj"
 COPY . .
 WORKDIR "/src/EcommerceWEB"
 RUN dotnet build "EcommerceWEB.csproj" -c Release -o /app/build
-RUN mkdir /opt/scripts
-
-RUN chmod +x ./entrypoint.sh
-RUN apt-get update && apt-get install -y dos2unix && dos2unix entrypoint.sh
-CMD /bin/bash ./entrypoint.sh
 
 FROM build AS publish
 RUN dotnet publish "EcommerceWEB.csproj" -c Release -o /app/publish

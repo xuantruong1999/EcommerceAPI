@@ -57,7 +57,7 @@ namespace EcommerceAPI.Services
             Guid CateId = Guid.Parse(newProduct.Category);
             product.CategoryID = CateId;
             product.Description = newProduct.Description ?? string.Empty;
-            product.Image = await _commonService.UploadProductImage(newProduct.Image); //await _blobStorage.UploadFileToBlob(newProduct.Image, false) ?? "";
+            product.Image = await _commonService.UploadProductImage(newProduct.Image);
 
             _unitOfwork.ProductRepository.Insert(product);
             _unitOfwork.Save();
