@@ -28,7 +28,7 @@ namespace EcommerceAPI.Services
 
         public List<CategoryProduct> GetAll()
         {
-            var listCateProduct = _unitOfwork.CategoryProductResponsitory.GetAll().OrderByDescending(c => c.Create_at).Distinct().ToList();
+            var listCateProduct = _unitOfwork.CategoryProductRepository.GetAll().OrderByDescending(c => c.Create_at).Distinct().ToList();
             return listCateProduct;
         }
         public Result Create(CategoryProduct category)
@@ -38,7 +38,7 @@ namespace EcommerceAPI.Services
                 Result error = "Params can not be null";
                 return error;
             }
-            _unitOfwork.CategoryProductResponsitory.Insert(category);
+            _unitOfwork.CategoryProductRepository.Insert(category);
             _unitOfwork.Save();
             return Result.WithOutErrored;
         }
@@ -47,7 +47,7 @@ namespace EcommerceAPI.Services
             if (id is null) return null;
             if (Guid.TryParse((string)id, out Guid Id))
             {
-                var cate = _unitOfwork.CategoryProductResponsitory.GetByID(Id);
+                var cate = _unitOfwork.CategoryProductRepository.GetByID(Id);
                 return cate;
             }
             else
@@ -72,7 +72,7 @@ namespace EcommerceAPI.Services
             cateToUpdate.Description = string.IsNullOrEmpty(category.Description) ? null : category.Description;
             cateToUpdate.Modify_at = DateTime.Now;
 
-            _unitOfwork.CategoryProductResponsitory.Update(cateToUpdate);
+            _unitOfwork.CategoryProductRepository.Update(cateToUpdate);
             _unitOfwork.Save();
             return Result.WithOutErrored;
         }
@@ -90,7 +90,7 @@ namespace EcommerceAPI.Services
                 return error;
             }
 
-            _unitOfwork.CategoryProductResponsitory.Delete(cateToDelete);
+            _unitOfwork.CategoryProductRepository.Delete(cateToDelete);
             _unitOfwork.Save();
             return Result.WithOutErrored;
         }

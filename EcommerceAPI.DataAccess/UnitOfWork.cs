@@ -10,10 +10,10 @@ namespace EcommerceAPI.DataAccess
     public class UnitOfWork : IUnitOfWork
     {
         private EcommerceContext dbContext;
-        private IResponsitory<User> userResponsitory;
-        private IResponsitory<Profile> profileResponsitory;
-        private IResponsitory<CategoryProduct> categoryProduct;
-        private IResponsitory<Product> product;
+        private IRepository<User> userRepository;
+        private IRepository<Profile> profileRepository;
+        private IRepository<CategoryProduct> categoryProduct;
+        private IRepository<Product> product;
         private bool disposedValue = false;
         public UnitOfWork(EcommerceContext DbContext)
         {
@@ -23,49 +23,49 @@ namespace EcommerceAPI.DataAccess
         #region getter
         EcommerceContext IUnitOfWork.dbContext => this.dbContext;
 
-        public IResponsitory<User> UserResponsitory
+        public IRepository<User> UserRepository
         {
             get
             {
-                if (this.userResponsitory == null)
+                if (this.userRepository == null)
                 {
-                    this.userResponsitory = new Responsitory<User>(dbContext);
+                    this.userRepository = new Repository<User>(dbContext);
                 }
-                return this.userResponsitory;
+                return this.userRepository;
             }
         }
 
-        public IResponsitory<Profile> ProfileResponsitory
+        public IRepository<Profile> ProfileRepository
         {
             get
             {
-                if (this.profileResponsitory == null)
+                if (this.profileRepository == null)
                 {
-                    this.profileResponsitory = new Responsitory<Profile>(dbContext);
+                    this.profileRepository = new Repository<Profile>(dbContext);
                 }
-                return this.profileResponsitory;
+                return this.profileRepository;
             }
         }
 
-        public IResponsitory<CategoryProduct> CategoryProductResponsitory
+        public IRepository<CategoryProduct> CategoryProductRepository
         {
             get
             {
                 if (this.categoryProduct == null)
                 {
-                    this.categoryProduct = new Responsitory<CategoryProduct>(dbContext);
+                    this.categoryProduct = new Repository<CategoryProduct>(dbContext);
                 }
                 return this.categoryProduct;
             }
         }
 
-        public IResponsitory<Product> ProductResponsitory
+        public IRepository<Product> ProductRepository
         {
             get
             {
                 if (this.product == null)
                 {
-                    this.product = new Responsitory<Product>(dbContext);
+                    this.product = new Repository<Product>(dbContext);
                 }
                 return this.product;
             }

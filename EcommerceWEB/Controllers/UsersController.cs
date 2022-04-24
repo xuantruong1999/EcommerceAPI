@@ -21,12 +21,10 @@ namespace EcommerceWEB.Controllers
     {
         private readonly IUsersService _userService;
         private readonly RoleManager<IdentityRole>  _roleManager;
-        private readonly IBlobStorageAccountService _blobStorageService;
-        public UsersController(IBlobStorageAccountService blobStorage,RoleManager<IdentityRole> roleMrg, IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork) : base(mapper, unitOfWork)
+        public UsersController(RoleManager<IdentityRole> roleMrg, IUsersService userService, UserManager<User> userManager, SignInManager<User> signInmanager, RoleManager<IdentityRole> roleManager, IMapper mapper, IUnitOfWork unitOfWork) : base(mapper, unitOfWork)
         {
             _userService = userService;
             _roleManager = roleMrg;
-            _blobStorageService = blobStorage;
         }
 
         [HttpGet]
@@ -218,12 +216,12 @@ namespace EcommerceWEB.Controllers
         {
             if(id != null)
             {
-                var avatar = _unitOfwork.ProfileResponsitory.GetAll().Where(p => p.UserID.Equals(id)).FirstOrDefault()?.Avatar;
+                var avatar = _unitOfwork.ProfileRepository.GetAll().Where(p => p.UserID.Equals(id)).FirstOrDefault()?.Avatar;
                 var result = await _userService.DeleteAsync(id); //cascade delete profile
                 if (!result.Errored)
                 {
-                    if (avatar != null && avatar != "profile-icon.png")
-                        _blobStorageService.DeleteBlobData(avatar);
+                    //if (avatar != null && avatar != "profile-icon.png")
+                        //_blobStorageService.DeleteBlobData(avatar);
                     return RedirectToAction("Index");
                 }
                 else

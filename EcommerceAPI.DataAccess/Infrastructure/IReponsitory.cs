@@ -7,7 +7,7 @@ using System.Text;
 
 namespace EcommerceAPI.DataAccess.Infrastructure
 {
-    public interface IResponsitory<T> where T : class
+    public interface IRepository<T> where T : class
     {
         List<T> GetAll();
         T GetByID(object Id);

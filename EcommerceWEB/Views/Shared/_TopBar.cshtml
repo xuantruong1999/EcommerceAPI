@@ -1,8 +1,8 @@
 ﻿@inject EcommerceAPI.DataAccess.Infrastructure.IUnitOfWork unitOfWork
 
 @{
-    var currentUser = unitOfWork.UserResponsitory.Find(u => u.UserName.Equals(User.Identity.Name)).FirstOrDefault();
-    var avatar = unitOfWork.ProfileResponsitory.Find(p => p.UserID.Equals(currentUser.Id)).FirstOrDefault()?.Avatar;
+    var currentUser = unitOfWork.UserRepository.Find(u => u.UserName.Equals(User.Identity.Name)).FirstOrDefault();
+    var avatar = unitOfWork.ProfileRepository.Find(p => p.UserID.Equals(currentUser.Id)).FirstOrDefault()?.Avatar;
     //string[] model = new string[2];
 
     //model[0] = (currentUser.UserName);

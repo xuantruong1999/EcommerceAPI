@@ -9,13 +9,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EcommerceAPI.Services
 {
     public interface ICommonService
     {
         void DeleteImageExistes(string fileName);
-        string UploadFile(IFormFile image);
+        Task<string> UploadProfileImage(IFormFile image);
+        Task<string> UploadProductImage(IFormFile image);
+        bool DeleteProductImageExisted(string fileName);
     }
     public class CommonService : BaseService, ICommonService
     {
@@ -45,18 +48,18 @@ namespace EcommerceAPI.Services
         /// </summary>
         /// <param name="image"></param>
         /// <returns>return a unique name or null</returns>
-        public string UploadFile(IFormFile image)
+        public async Task<string> UploadProfileImage(IFormFile image)
         {
             if (image == null) return null;
             try
             {
                 string fileName = Guid.NewGuid().ToString() + image.FileName;
-                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images", "ProductImages", fileName);
+                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images", "UserImages", fileName);
                 var extension = new[] { "image/jpg", "image/png", "image/jpeg" };
                 if (!extension.Contains(image.ContentType)) return null;
                 using (FileStream file = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 {
-                    image.CopyTo(file);
+                    image.CopyToAsync(file);
                 }
                 return fileName;
             }
@@ -91,6 +94,70 @@ namespace EcommerceAPI.Services
             catch (IOException e)
             {
                 throw e;
+            }
+        }
+
+        public async Task<string> UploadProductImage(IFormFile image)
+        {
+            if (image == null) return null;
+            try
+            {
+                string fileName = Guid.NewGuid().ToString() + image.FileName;
+                string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images", "ProductImages", fileName);
+                var extension = new[] { "image/jpg", "image/png", "image/jpeg" };
+                if (!extension.Contains(image.ContentType)) return null;
+                using (FileStream file = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    image.CopyToAsync(file);
+                }
+                return fileName;
+            }
+            catch (FileNotFoundException ex)
+            {
+                throw ex;
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                throw ex;
+            }
+            catch (DriveNotFoundException ex)
+            {
+                throw ex;
+            }
+            catch (PathTooLongException ex)
+            {
+                throw ex;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw ex;
+            }
+            catch (IOException e) when ((e.HResult & 0x0000FFFF) == 32)
+            {
+                throw e;
+            }
+            catch (IOException e) when ((e.HResult & 0x0000FFFF) == 80)
+            {
+                throw e;
+            }
+            catch (IOException e)
+            {
+                throw e;
+            }
+        }
+
+        public bool DeleteProductImageExisted(string fileName)
+        {
+            string pathFileToDelete = Path.Combine(_hostingEnvironment.WebRootPath, "Images\\ProductImages", fileName);
+
+            if (System.IO.File.Exists(pathFileToDelete))
+            {
+                System.IO.File.Delete(pathFileToDelete);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }

@@ -48,7 +48,7 @@ namespace EcommerceWEB
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<IBlobStorageAccountService, BlobStorageAccountService>();
+            //services.AddScoped<IBlobStorageAccountService, BlobStorageAccountService>();
 
             services.AddControllersWithViews();
 

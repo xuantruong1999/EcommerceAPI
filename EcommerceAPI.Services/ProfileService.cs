@@ -22,12 +22,10 @@ namespace EcommerceAPI.Services
     public class ProfileService : BaseService, IProfileService
     {
         protected readonly IHostingEnvironment _hostingEnvironment;
-        protected readonly IBlobStorageAccountService _blobStorageService;
         
-        public ProfileService(IBlobStorageAccountService blobStorage, IHostingEnvironment hostingEnvironment, IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper) : base(unitOfWork, userManager, mapper)
+        public ProfileService(IHostingEnvironment hostingEnvironment, IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper) : base(unitOfWork, userManager, mapper)
         {
             _hostingEnvironment = hostingEnvironment;
-            _blobStorageService = blobStorage;
         }
 
         /// <summary>
@@ -38,7 +36,6 @@ namespace EcommerceAPI.Services
         public DataAccess.EFModel.Profile GetProfileByName(string userName)
         {
             if (string.IsNullOrEmpty(userName)) return null;
-            //var userExist = _unitOfwork.UserResponsitory.Find(u => u.UserName == userName).FirstOrDefault();
             var userExist = _unitOfwork.dbContext.Users.Where(u => u.UserName == userName).Include(u => u.Profile).FirstOrDefault();
             if (userExist != null)
             {
@@ -71,7 +68,7 @@ namespace EcommerceAPI.Services
                 if (profile == null)
                     throw new ArgumentNullException();
 
-                _unitOfwork.ProfileResponsitory.Insert(profile);
+                _unitOfwork.ProfileRepository.Insert(profile);
                 _unitOfwork.Save();
                 return true;
             }
@@ -88,7 +85,7 @@ namespace EcommerceAPI.Services
                 if (profile == null)
                     return false;
 
-                var profileInDB = _unitOfwork.ProfileResponsitory.Find(p => p.UserID == profile.UserID)?.FirstOrDefault();
+                var profileInDB = _unitOfwork.ProfileRepository.Find(p => p.UserID == profile.UserID)?.FirstOrDefault();
                 if (profileInDB != null)
                 {
                     var oldImage = profileInDB.Avatar;
@@ -101,13 +98,13 @@ namespace EcommerceAPI.Services
                         profileInDB.Avatar = profile.Avatar;
                     }
 
-                    _unitOfwork.ProfileResponsitory.Update(profileInDB);
+                    _unitOfwork.ProfileRepository.Update(profileInDB);
                     _unitOfwork.Save();
 
                     if (!string.IsNullOrEmpty(profile.Avatar) && !string.IsNullOrEmpty(oldImage) && profile.Avatar != oldImage
                             && oldImage != "profile-icon.png")
                     {
-                        _blobStorageService.DeleteBlobData(oldImage);
+                        DeleteImageExisted(oldImage);
                     }
 
                     return true;
@@ -136,10 +133,11 @@ namespace EcommerceAPI.Services
                 return false;
             }
         }
+       
         private bool DeleteImageExisted(string fileName)
         {
             string pathFileToDelete = Path.Combine(_hostingEnvironment.WebRootPath, "Images\\UserImages", fileName);
-
+            
             if (System.IO.File.Exists(pathFileToDelete))
             {
                 System.IO.File.Delete(pathFileToDelete);

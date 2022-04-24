@@ -23,13 +23,13 @@ namespace EcommerceWEB.Controllers
     public class ProfilesController : BaseController
     {
         private readonly IProfileService _profileService;
+        private readonly ICommonService _commonService;
         protected readonly IWebHostEnvironment _hostingEnviroment;
-        protected readonly IBlobStorageAccountService _blobStorageService;
-        public ProfilesController(IBlobStorageAccountService blobStorage, IMapper mapper, IWebHostEnvironment hostingEnviroment, IProfileService profileService) : base(mapper) 
+        public ProfilesController(ICommonService commonService, IMapper mapper, IWebHostEnvironment hostingEnviroment, IProfileService profileService) : base(mapper) 
         {
+            _commonService = commonService;
             _profileService = profileService;
             _hostingEnviroment = hostingEnviroment;
-            _blobStorageService = blobStorage;
         }
         
         [HttpGet]
@@ -39,6 +39,8 @@ namespace EcommerceWEB.Controllers
             {
                 System.Security.Claims.ClaimsPrincipal currentUser = this.User;
                 var profile = _profileService.GetProfileByName(currentUser.Identity.Name);
+
+                profile.Avatar = "Images/UserImages/" + profile.Avatar;
                 if (profile != null)
                 {
                     var profileToView = _mapper.Map<ProfileViewModel>(profile);
@@ -64,7 +66,7 @@ namespace EcommerceWEB.Controllers
                 {
                     if (formFile != null)
                     {
-                        string uniqueFilename = await _blobStorageService.UploadFileToBlob(formFile, true);
+                        string uniqueFilename = await _commonService.UploadProfileImage(formFile);
                         profile.Avatar = uniqueFilename;
                     }
 
@@ -89,22 +91,5 @@ namespace EcommerceWEB.Controllers
                 return View("Error", new ErrorViewModel("Parrams is invalid"));
             }
         }
-
-        private bool DeleteImageExisted(string fileName)
-        {
-            string pathFileToDelete = Path.Combine(_hostingEnviroment.WebRootPath, "Images\\UserImages", fileName);
-
-            if (System.IO.File.Exists(pathFileToDelete))
-            {
-                System.IO.File.Delete(pathFileToDelete);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-
     }
 }

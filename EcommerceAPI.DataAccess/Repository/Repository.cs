@@ -9,12 +9,12 @@ using System.Text;
 
 namespace EcommerceAPI.DataAccess.Respository
 {
-    public class Responsitory<T> : IResponsitory<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         protected readonly EcommerceContext _dbContext;
         private DbSet<T> _dbSet;
 
-        public Responsitory(EcommerceContext _context)
+        public Repository(EcommerceContext _context)
         {
             _dbContext = _context;
             _dbSet = _context.Set<T>();

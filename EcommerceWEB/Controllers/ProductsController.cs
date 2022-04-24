@@ -147,7 +147,7 @@ namespace EcommerceWEB.Controllers
                     return View("Error", new ErrorViewModel("Product is not found"));
 
                 var productToView = _mapper.Map<ProductDetailViewModel>(productDetail);
-                productToView.Image = productToView.Image;
+                productToView.Image = "Images/ProductImages/" + productToView.Image;
                 return View(productToView);
             }
             else
@@ -180,7 +180,7 @@ namespace EcommerceWEB.Controllers
 
             if(Id == null)
             {
-                listCate = _unitOfwork.CategoryProductResponsitory.GetAll()
+                listCate = _unitOfwork.CategoryProductRepository.GetAll()
                                                                    .Select(x => new SelectListItem()
                                                                    {
                                                                        Value = x.Id.ToString(),
@@ -189,7 +189,7 @@ namespace EcommerceWEB.Controllers
             }
             else
             {
-                listCate = _unitOfwork.CategoryProductResponsitory.GetAll()
+                listCate = _unitOfwork.CategoryProductRepository.GetAll()
                                                                    .Select(x => new SelectListItem()
                                                                    {
                                                                        Value = x.Id.ToString(),

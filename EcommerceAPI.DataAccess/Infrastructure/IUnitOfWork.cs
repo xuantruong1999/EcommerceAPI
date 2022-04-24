@@ -10,9 +10,9 @@ namespace EcommerceAPI.DataAccess.Infrastructure
         EcommerceContext dbContext { get; }
         void Save();
         void SaveAsync();
-        IResponsitory<User> UserResponsitory { get; }
-        IResponsitory<Profile> ProfileResponsitory { get; }
-        IResponsitory<CategoryProduct> CategoryProductResponsitory { get; }
-        IResponsitory<Product> ProductResponsitory { get; }
+        IRepository<User> UserRepository { get; }
+        IRepository<Profile> ProfileRepository { get; }
+        IRepository<CategoryProduct> CategoryProductRepository { get; }
+        IRepository<Product> ProductRepository { get; }
     }
 }

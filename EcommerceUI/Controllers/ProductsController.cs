@@ -34,8 +34,8 @@ namespace EcommerceWEB.Controllers
         {
             //var urlImg = _httpContext.HttpContext.Request.Scheme + $"://" + _httpContext.HttpContext.Request.Host.Value + $"/Images/ProductImages/";
             var urlImg = $"https://localhost:5003/images/productimages/";
-            var products = from p in _unitOfWork.ProductResponsitory.GetAll()
-                           join c in _unitOfWork.CategoryProductResponsitory.GetAll()
+            var products = from p in _unitOfWork.ProductRepository.GetAll()
+                           join c in _unitOfWork.CategoryProductRepository.GetAll()
                            on p.CategoryID equals c.Id
                            select new ProductAPIModel()
                            {
@@ -62,12 +62,12 @@ namespace EcommerceWEB.Controllers
                 return BadRequest();
 
             var convertID = Guid.Parse(id);
-            var product = _unitOfWork.ProductResponsitory.GetByID(convertID);
+            var product = _unitOfWork.ProductRepository.GetByID(convertID);
 
             if (product != null)
             {
                 var urlImg = HOSTWEB;
-                var category = _unitOfWork.CategoryProductResponsitory.GetByID(product.CategoryID);
+                var category = _unitOfWork.CategoryProductRepository.GetByID(product.CategoryID);
                 var productToView = new ProductAPIModel()
                 {
                     Id = product.Id,

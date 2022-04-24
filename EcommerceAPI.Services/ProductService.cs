@@ -26,18 +26,17 @@ namespace EcommerceAPI.Services
     {
         protected readonly ICommonService _commonService;
         protected readonly IHostingEnvironment _hostingEnviroment;
-        protected readonly IBlobStorageAccountService _blobStorage;
-        public ProductService(IHostingEnvironment hostingEnvironment, ICommonService commonService,IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper, IBlobStorageAccountService blobStorage) 
+
+        public ProductService(IHostingEnvironment hostingEnvironment, ICommonService commonService,IUnitOfWork unitOfWork, UserManager<User> userManager, IMapper mapper) 
             : base(unitOfWork, userManager, mapper)
         {
             _commonService = commonService;
             _hostingEnviroment = hostingEnvironment;
-            _blobStorage = blobStorage;
         }
 
         public IList<Product> GetAll()
         {
-            var listProduct = _unitOfwork.ProductResponsitory.GetAll().OrderByDescending(p => p.Create_at);
+            var listProduct = _unitOfwork.ProductRepository.GetAll().OrderByDescending(p => p.Create_at);
             return listProduct.ToList();
         }
 
@@ -58,9 +57,9 @@ namespace EcommerceAPI.Services
             Guid CateId = Guid.Parse(newProduct.Category);
             product.CategoryID = CateId;
             product.Description = newProduct.Description ?? string.Empty;
-            product.Image = await _blobStorage.UploadFileToBlob(newProduct.Image, false) ?? "";
+            product.Image = await _commonService.UploadProductImage(newProduct.Image); //await _blobStorage.UploadFileToBlob(newProduct.Image, false) ?? "";
 
-            _unitOfwork.ProductResponsitory.Insert(product);
+            _unitOfwork.ProductRepository.Insert(product);
             _unitOfwork.Save();
 
             return Result.WithOutErrored;
@@ -73,7 +72,7 @@ namespace EcommerceAPI.Services
             Product productToUpdate = new Product();
             if (Guid.TryParse((string)id, out Guid Id))
             {
-                productToUpdate = _unitOfwork.ProductResponsitory.GetByID(Id);
+                productToUpdate = _unitOfwork.ProductRepository.GetByID(Id);
             }
             return productToUpdate;
         }
@@ -101,14 +100,14 @@ namespace EcommerceAPI.Services
             if (model.File != null)
             {
                 byte[]fileData = new byte[model.File.Length];
-                productToUpdate.Image =  await _blobStorage.UploadFileToBlob(model.File, isUserFile: false);
+                productToUpdate.Image = await _commonService.UploadProductImage(model.File);
                 if (!string.IsNullOrEmpty(temp))
                 {
-                    _blobStorage.DeleteBlobData(temp);
+                    _commonService.DeleteProductImageExisted(temp);
                 }
             }
 
-            _unitOfwork.ProductResponsitory.Update(productToUpdate);
+            _unitOfwork.ProductRepository.Update(productToUpdate);
             _unitOfwork.Save();
 
             return Result.WithOutErrored;
@@ -121,7 +120,7 @@ namespace EcommerceAPI.Services
                 return error;
             }
             Guid.TryParse(id, out Guid Id);
-            var product = _unitOfwork.ProductResponsitory.GetByID(Id);
+            var product = _unitOfwork.ProductRepository.GetByID(Id);
             if (product == null)
             {
                 Result error = "Product is not exist";
@@ -129,9 +128,9 @@ namespace EcommerceAPI.Services
             }
 
             //delete image in azure storage account blob
-            _blobStorage.DeleteBlobData(product.Image);
+            _commonService.DeleteProductImageExisted(product.Image);
 
-            _unitOfwork.ProductResponsitory.Delete(product);
+            _unitOfwork.ProductRepository.Delete(product);
             _unitOfwork.Save();
 
             return Result.WithOutErrored;

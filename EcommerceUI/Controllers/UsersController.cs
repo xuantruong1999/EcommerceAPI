@@ -42,7 +42,7 @@ namespace EcommerceWEB.Controllers
                 var userDb = await _userManager.FindByNameAsync(loginModel.Username);
                 if (userDb != null && await _userManager.CheckPasswordAsync(userDb, loginModel.Password))
                 {
-                    var avatar = _unitOfWork.ProfileResponsitory.Find(p => p.UserID == userDb.Id).FirstOrDefault()?.Avatar;
+                    var avatar = _unitOfWork.ProfileRepository.Find(p => p.UserID == userDb.Id).FirstOrDefault()?.Avatar;
                     var baseUrl = "http://127.0.0.1:5000/images/userimages/";
                     UserApiModel user = new UserApiModel()
                     {
@@ -56,7 +56,7 @@ namespace EcommerceWEB.Controllers
                     string refreshToken = _tokenService.GenerateRefreshToken();
                     userDb.RefreshToken = refreshToken;
                     userDb.RefreshTokenTimeStamp = System.DateTime.Now.AddDays(5);
-                    _unitOfWork.UserResponsitory.Update(userDb);
+                    _unitOfWork.UserRepository.Update(userDb);
                     _unitOfWork.Save();
                     return Ok(new { user, token, refreshToken });
 
@@ -114,10 +114,10 @@ namespace EcommerceWEB.Controllers
         {
             string token = _tokenService.GetCurrentAsync();
             var id = _tokenService.GetClaimsNamedId(token);
-            var user = _unitOfWork.UserResponsitory.Find(u => u.Id == id).SingleOrDefault();
+            var user = _unitOfWork.UserRepository.Find(u => u.Id == id).SingleOrDefault();
             if (user == null) return false;
             user.RefreshToken = null;
-            _unitOfWork.UserResponsitory.Update(user);
+            _unitOfWork.UserRepository.Update(user);
             _unitOfWork.Save();
             return true;
         }
