@@ -19,7 +19,7 @@ docker exec -it db /opt/mssql-tools/bin/sqlcmd `
    -Q "RESTORE DATABASE EcommerceDB FROM DISK = '/var/opt/mssql/backup/ecodb.bak' WITH MOVE 'EcommerceDB' TO '/var/opt/mssql/data/EcommerceDB.mdf', MOVE 'EcommerceDB_log' TO '/var/opt/mssql/data/EcommerceDB_log.ldf'"
    
    
-   ---
+------------
    to check 
    
    
