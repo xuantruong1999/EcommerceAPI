@@ -3,9 +3,20 @@ services:
   ecommerceweb:
     container_name: ecommerceweb
     image: ${DOCKER_REGISTRY-}ecommerceweb
+    ports:
+      - 80
+      - 443
+    environment:
+    - ASPNETCORE_ENVIRONMENT=Development
+    - ASPNETCORE_URLS=https://+:443;http://+:80
+    - ASPNETCORE_Kestrel__Certificates__Default__Password=123456
+    - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     build:
       context: .
       dockerfile: EcommerceWEB/Dockerfile
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    restart: always
     depends_on:
       - db
   db:
@@ -15,6 +26,7 @@ services:
       - "1433:1433"
     volumes:
       - backup_volume:/var/opt/mssql
+    restart: always
     environment:
       SA_PASSWORD: "sa_pass123456"
       ACCEPT_EULA: "Y"

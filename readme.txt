@@ -1,8 +1,14 @@
+-----Docker Compose with https setting
+- Refference:https://docs.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-6.0
+
+dotnet dev-certs https -ep $env:USERPROFILE\.aspnet\https\aspnetapp.pfx -p "123456"
+dotnet dev-certs https --trust
+
 -----How to restore db (ecodb) to sql server on linux container? 
 
 docker exec -it db mkdir /var/opt/mssql/backup
 
-docker cp ecodb.bak db:/var/opt/mssql/backup
+docker cp backup_db/ecodb.bak db:/var/opt/mssql/backup
 
 
 docker exec -it db /opt/mssql-tools/bin/sqlcmd -S localhost `
