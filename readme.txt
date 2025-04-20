@@ -1,3 +1,4 @@
+The connection string is exposed to the internet, but it's not available
 -----Docker Compose with https setting
 - Refference:https://docs.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-6.0
 
